@@ -23,14 +23,6 @@ const routes: Routes = [
       }
     ]
   },
-  {
-    path: 'home',
-    loadChildren: () => import('./home/home.module').then( m => m.HomePageModule)
-  },
-  {
-    path: 'setting',
-    loadChildren: () => import('./setting/setting.module').then( m => m.SettingPageModule)
-  }
 ];
 
 @NgModule({

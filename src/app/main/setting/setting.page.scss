@@ -1,0 +1,24 @@
+.profile-container {
+  background: var(--ion-color-primary);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 20px 30px 30px 20px;
+
+  ion-icon {
+    margin-right: 30px;
+    font-size: 100px;
+  }
+}
+
+.logout-button {
+  left: 0;
+  right: 0;
+  top: calc(100% - 120px);
+  position: absolute;
+  margin: 0 40px;
+
+  ion-icon {
+    margin-right: 10px;
+  }
+}

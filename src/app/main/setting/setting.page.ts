@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { TokenService } from 'src/app/services/token.service';
 
 @Component({
   selector: 'app-setting',
@@ -6,10 +8,20 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./setting.page.scss'],
 })
 export class SettingPage implements OnInit {
+  username: string = "James kenneth A. guidaven";
 
-  constructor() { }
+  constructor(private tokenService: TokenService, private router: Router) { }
 
-  ngOnInit() {
+  ngOnInit() {}
+
+  showDBSyncPage() {
   }
 
+  showProfilePage() {
+  }
+
+  logout() {
+    this.tokenService.set(undefined);
+    this.router.navigate([ 'login' ]);
+  }
 }

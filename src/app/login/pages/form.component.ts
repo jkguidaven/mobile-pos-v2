@@ -50,7 +50,7 @@ export class LoginFormComponent implements OnInit {
 
         if (result.accessToken) {
           this.tokenService.set(result.accessToken);
-          this.router.navigate([ '/main' ]);
+          this.router.navigate([ '/main' ], { replaceUrl: true });
         }
       });
   }
