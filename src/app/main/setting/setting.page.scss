@@ -29,5 +29,7 @@ ion-content {
 }
 
 ion-item {
-  padding: 10px 0;
+  ion-label {
+    padding: 10px 0;
+  }
 }

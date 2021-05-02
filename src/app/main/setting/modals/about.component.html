@@ -1,3 +1,19 @@
-<p>
-  about works!
-</p>
+<ion-toolbar>
+  <ion-buttons slot="start">
+    <ion-button (click)="dismiss()">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+
+      Back
+    </ion-button>
+  </ion-buttons>
+</ion-toolbar>
+
+<ion-content class="ion-padding">
+  <h1>About the app</h1>
+
+  <ion-text>
+    This is a booking app that provides sales agents a way to notify backoffice and warehouse
+    of an upcoming sales order. This provides warehouse enough time to plan and manage the
+    preparation of the stocks.
+  </ion-text>
+</ion-content>
