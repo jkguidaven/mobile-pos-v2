@@ -9,6 +9,7 @@ import { LoginPageRoutingModule } from './login-routing.module';
 import { LoginPage } from './login.page';
 import { LoginFormComponent } from './pages/form.component';
 import { ServerSettingsComponent } from './pages/server-settings.component';
+import { CommonComponentModule } from '../common/common.module';
 
 @NgModule({
   imports: [
@@ -16,7 +17,8 @@ import { ServerSettingsComponent } from './pages/server-settings.component';
     FormsModule,
     ReactiveFormsModule,
     IonicModule,
-    LoginPageRoutingModule
+    LoginPageRoutingModule,
+    CommonComponentModule
   ],
   declarations: [LoginPage, LoginFormComponent, ServerSettingsComponent]
 })

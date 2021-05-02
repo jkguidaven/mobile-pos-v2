@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
-import { SettingAboutComponent } from './about.component';
+import { PasswordFieldComponent } from './password-field.component';
 
-describe('SettingAboutComponent', () => {
-  let component: SettingAboutComponent;
-  let fixture: ComponentFixture<SettingAboutComponent>;
+describe('PasswordFieldComponent', () => {
+  let component: PasswordFieldComponent;
+  let fixture: ComponentFixture<PasswordFieldComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ SettingAboutComponent ],
+      declarations: [ PasswordFieldComponent ],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(SettingAboutComponent);
+    fixture = TestBed.createComponent(PasswordFieldComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));

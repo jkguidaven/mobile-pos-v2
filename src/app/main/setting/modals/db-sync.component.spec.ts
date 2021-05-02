@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
-import { DbSyncComponent } from './db-sync.component';
+import { SettingDbSyncComponent } from './db-sync.component';
 
-describe('DbSyncComponent', () => {
-  let component: DbSyncComponent;
-  let fixture: ComponentFixture<DbSyncComponent>;
+describe('SettingDbSyncComponent', () => {
+  let component: SettingDbSyncComponent;
+  let fixture: ComponentFixture<SettingDbSyncComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ DbSyncComponent ],
+      declarations: [ SettingDbSyncComponent ],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(DbSyncComponent);
+    fixture = TestBed.createComponent(SettingDbSyncComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));

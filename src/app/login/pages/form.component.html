@@ -15,10 +15,7 @@
       <ion-input formControlName="username"></ion-input>
     </ion-item>
 
-    <ion-item color="primary">
-      <ion-label position="floating">Password</ion-label>
-      <ion-input type="password" formControlName="password"></ion-input>
-    </ion-item>
+    <ion-password label="Password" controlName="password" color="primary"></ion-password>
 
     <ion-text *ngIf="error()" color="warning">{{ error() }}</ion-text>
 
