@@ -4,7 +4,7 @@
   </ion-title>
 </ion-toolbar>
 
-<ion-content [fullscreen]="true">
+<ion-content [fullscreen]="true" color="light">
   <div class="profile-container ion-padding-bottom">
     <ion-icon name="person-circle-outline" color="light"></ion-icon>
 
@@ -14,25 +14,42 @@
     </ion-label>
   </div>
 
-  <ion-list>
-    <ion-list-header>
-      Setting Menu
-    </ion-list-header>
 
-    <ion-item detail button lines="full" (click)="showProfilePage()">
-      <ion-icon name="person-outline" slot="start"></ion-icon>
-      <ion-label>
-        Profile
-      </ion-label>
-    </ion-item>
+  <ion-card mode="ios">
+    <ion-list>
+      <ion-item detail button lines="none" (click)="showProfilePage()">
+        <ion-icon name="person-outline" slot="start"></ion-icon>
+        <ion-label>
+          Profile
+        </ion-label>
+      </ion-item>
 
-    <ion-item detail button lines="full" (click)="showDBSyncPage()">
-      <ion-icon name="server-outline" slot="start"></ion-icon>
-      <ion-label>
-        DB Sync
-      </ion-label>
-    </ion-item>
-  </ion-list>
+      <ion-item detail button lines="none" (click)="showProfilePage()">
+        <ion-icon name="person-outline" slot="start"></ion-icon>
+        <ion-label>
+          Change Password
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  </ion-card>
+
+  <ion-card mode="ios">
+    <ion-list>
+      <ion-item detail button lines="none" (click)="showDBSyncPage()">
+        <ion-icon name="server-outline" slot="start"></ion-icon>
+        <ion-label>
+          DB Sync
+        </ion-label>
+      </ion-item>
+
+      <ion-item detail button lines="none" (click)="showDBSyncPage()">
+        <ion-icon name="server-outline" slot="start"></ion-icon>
+        <ion-label>
+          About
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  </ion-card>
 
   <ion-button expand="block" fill="outline" class="logout-button" (click)="logout()">
     <ion-icon name="power-outline"></ion-icon>
