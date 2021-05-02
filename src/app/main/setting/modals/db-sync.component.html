@@ -1,3 +1,31 @@
-<p>
-  db-sync works!
-</p>
+<ion-toolbar>
+  <ion-buttons slot="start">
+    <ion-button (click)="dismiss()">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+
+      Back
+    </ion-button>
+  </ion-buttons>
+</ion-toolbar>
+
+<ion-content class="ion-padding">
+  <h1>DB Sync</h1>
+
+  <ion-text class="instruction">
+    To allow the app to operate without constant internet connection. The app will need
+    to cache item headers, customer information and price scheme in your local device. Please
+    Sync your device to the server.
+  </ion-text>
+
+  <ion-text *ngIf="lastSync; else hasNotSync">
+    The last time you have sync your device is {{ lastSync }}
+  </ion-text>
+
+  <ng-template #hasNotSync>
+    <ion-text>You have not yet sync your device to the server.</ion-text>
+  </ng-template>
+
+  <ion-button expand="block" mode="ios">
+    SYNC NOW
+  </ion-button>
+</ion-content>
