@@ -1,0 +1,42 @@
+<ion-toolbar color="primary">
+  <ion-buttons slot="end">
+    <ion-button (click)="showServerSettings()">
+      <ion-icon name="settings-outline"></ion-icon>
+    </ion-button>
+  </ion-buttons>
+</ion-toolbar>
+
+<ion-content color="primary">
+  <ion-title class="ion-text-center">NGOSION SYSTEM</ion-title>
+
+  <form [formGroup]="form" class="ion-padding ion-margin">
+    <ion-item color="primary">
+      <ion-label position="floating">Username</ion-label>
+      <ion-input formControlName="username"></ion-input>
+    </ion-item>
+
+    <ion-item color="primary">
+      <ion-label position="floating">Password</ion-label>
+      <ion-input type="password" formControlName="password"></ion-input>
+    </ion-item>
+
+    <ion-text *ngIf="error()" color="warning">{{ error() }}</ion-text>
+
+    <ion-button
+      [disabled]="form.invalid || processing"
+      expand="block"
+      fill="outline"
+      color="light"
+      class="ion-margin-top"
+      (click)="authenticate()"
+    >
+      Login
+    </ion-button>
+  </form>
+</ion-content>
+
+<ion-footer class="ion-no-border">
+  <ion-toolbar color="primary" class="ion-text-center">
+    App version: 2.0
+  </ion-toolbar>
+</ion-footer>

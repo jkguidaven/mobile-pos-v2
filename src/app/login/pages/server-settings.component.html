@@ -1,0 +1,22 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>Server settings</ion-title>
+
+    <ion-buttons slot="primary">
+      <ion-button (click)="save()" [disabled]="serverUrl.invalid">
+        Save
+      </ion-button>
+  </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <p>Please specify here the server url which this app will connect. make sure it is a valid url.</p>
+  <ion-item>
+    <ion-icon name="cloud-done-outline" slot="end"></ion-icon>
+    <ion-input [formControl]="serverUrl" placeholder="http://"></ion-input>
+  </ion-item>
+</ion-content>
