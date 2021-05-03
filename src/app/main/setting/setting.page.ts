@@ -32,7 +32,15 @@ export class SettingPage implements OnInit {
 
   async showProfilePage() {
     const modal = await this.modalController.create({
-      component: SettingProfileComponent
+      component: SettingProfileComponent,
+      componentProps: {
+        username: 'jkguidaven',
+        fullname: 'James Kenneth A. Guidaven',
+        mobile: '+63 929 6998983',
+        phone: '(032) 343 3725',
+        email: 'jkguidaven@gmail.com',
+        address: 'Blk 3 lot 4 Palm heights subd. Tabok II mandaue city cebu'
+      }
     });
 
     await modal.present();

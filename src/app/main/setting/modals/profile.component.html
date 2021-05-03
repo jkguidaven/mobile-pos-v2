@@ -1,3 +1,25 @@
-<p>
-  profile works!
-</p>
+<ion-toolbar color="primary">
+  <ion-buttons slot="start">
+    <ion-button (click)="dismiss()">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+
+      Back
+    </ion-button>
+  </ion-buttons>
+</ion-toolbar>
+
+<ion-content>
+  <div class="profile-container ion-padding-bottom">
+    <ion-icon name="person-circle-outline" color="light"></ion-icon>
+    <ion-title color="secondary" class="ion-text-center">Basic Information</ion-title>
+  </div>
+
+  <ion-list class="ion-margin">
+    <ion-item
+      *ngFor="let field of information"
+    >
+      <ion-label>{{ field.label }}</ion-label>
+      <ion-input readonly [value]="field.value" class="ion-text-end" color="dark"></ion-input>
+    </ion-item>
+  </ion-list>
+</ion-content>
