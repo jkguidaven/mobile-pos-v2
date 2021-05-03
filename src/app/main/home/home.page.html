@@ -1,12 +1,15 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Home
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content [fullscreen]="true" color="light">
+  <ion-card class="sales-container" mode="ios">
+    <ion-card-content>
+        <ion-text class="label">Current sales</ion-text>
+        <div class="ion-text-end">
+          <ion-text class="currency-symbol">₱</ion-text>
+          <ion-text class="value">1,000,000.00</ion-text>
+          <ion-text class="currency">PHP</ion-text>
+        </div>
+    </ion-card-content>
+  </ion-card>
 
-<ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
       <ion-title size="large">Home</ion-title>
