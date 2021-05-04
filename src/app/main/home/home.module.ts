@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { CountoModule } from 'angular2-counto';
 
 import { IonicModule } from '@ionic/angular';
 
@@ -15,7 +16,8 @@ import { ExploreContainerComponentModule } from 'src/app/explore-container/explo
     FormsModule,
     IonicModule,
     HomePageRoutingModule,
-    ExploreContainerComponentModule
+    ExploreContainerComponentModule,
+    CountoModule
   ],
   declarations: [HomePage]
 })

@@ -1,12 +1,17 @@
+ion-title {
+  font-weight: 200;
+  padding-right: 35px;
+}
 
 .sales-container {
   margin-right: -100px;
+  margin-top: 10px;
   padding: 20px;
   border-radius: 20px;
   box-shadow: none;
 
   .label {
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 400px;
     display: block;
     color: rgb(141, 141, 141);
@@ -23,6 +28,8 @@
       font-size: 42px;
       font-weight: 500;
       color: black;
+      display: inline-block;
+      margin-left: 15px;
     }
 
     .currency {
