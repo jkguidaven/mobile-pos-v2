@@ -1,7 +1,4 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
 import { AuthResult } from '../models/auth-result';
 import { ServerSettingsService } from './server-settings.service';
 
@@ -12,7 +9,7 @@ import { Plugins } from '@capacitor/core';
   providedIn: 'root'
 })
 export class AuthService {
-  constructor(private serverSettings: ServerSettingsService, private http: HttpClient) {
+  constructor(private serverSettings: ServerSettingsService) {
   }
 
   async validate(token: string): Promise<boolean> {
@@ -30,8 +27,7 @@ export class AuthService {
         }
       });
 
-      console.log(result);
-      return true;
+      return result.status === 200;
     } catch (ex) {
       console.error(ex);
       return Boolean(token);

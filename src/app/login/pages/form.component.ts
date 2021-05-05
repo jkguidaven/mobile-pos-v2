@@ -6,6 +6,7 @@ import { finalize } from 'rxjs/operators';
 import { AuthResult } from 'src/app/models/auth-result';
 import { AuthService } from 'src/app/services/auth.service';
 import { TokenService } from 'src/app/services/token.service';
+import { UserInfoService } from 'src/app/services/user-info.service';
 import { ServerSettingsComponent } from './server-settings.component';
 
 @Component({
@@ -26,6 +27,7 @@ export class LoginFormComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private tokenService: TokenService,
+    private userInfoService: UserInfoService,
     private nav: IonNav,
     private router: Router) { }
 
@@ -36,25 +38,25 @@ export class LoginFormComponent implements OnInit {
     return this.errorMessage;
   }
 
-  authenticate() {
+  async authenticate() {
     const username = this.form.controls['username'].value;
     const password = this.form.controls['password'].value;
     this.processing = true;
     this.errorMessage = null;
 
-    this.authService
-      .authenticate(username, password)
-      .then((result: AuthResult) => {
-        this.errorMessage = result.message;
+    const result: AuthResult = await this.authService.authenticate(username, password);
+    this.errorMessage = result.message;
 
-        if (result.accessToken) {
-          console.log('setting access token to local storage.');
-          this.tokenService.set(result.accessToken);
-          console.log('redirecting to main page');
-          this.router.navigate([ '/main' ], { replaceUrl: true });
-        }
-      })
-      .finally(() => this.processing = false);
+    if (result.accessToken) {
+      console.log('setting access token to local storage.');
+      this.tokenService.set(result.accessToken);
+      console.log('Fetching user info.');
+      await this.userInfoService.fetch();
+      console.log('redirecting to main page');
+      this.router.navigate([ '/main' ], { replaceUrl: true });
+    }
+
+    this.processing = false;
   }
 
   async showServerSettings() {

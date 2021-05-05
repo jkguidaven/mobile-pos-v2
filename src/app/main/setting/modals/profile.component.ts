@@ -26,6 +26,7 @@ export class SettingProfileComponent implements OnInit {
   get information() {
     return [
       { label: 'Full Name', value: this.fullname },
+      { label: 'Gender', value: this.gender },
       { label: 'Username', value: this.username },
       { label: 'Email', value: this.email },
       { label: 'Phone', value: this.phone },

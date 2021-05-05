@@ -6,7 +6,7 @@
   </ion-buttons>
 
   <ion-title>
-    Welcome! James Kenneth
+    Welcome! {{ (userInfo$ | async)?.firstname }}
   </ion-title>
 </ion-toolbar>
 

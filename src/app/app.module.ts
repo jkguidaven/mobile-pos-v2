@@ -9,6 +9,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { StoreModule } from '@ngrx/store';
 
+import UserInfoReducer from './store/reducers/user-info.actions';
+
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
@@ -16,7 +18,7 @@ import { StoreModule } from '@ngrx/store';
     AppRoutingModule,
     BrowserModule,
     IonicModule.forRoot(),
-    StoreModule.forRoot({}, {}),
+    StoreModule.forRoot({ userInfo: UserInfoReducer }, {}),
     HttpClientModule
   ],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],

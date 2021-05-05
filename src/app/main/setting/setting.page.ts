@@ -6,6 +6,11 @@ import { SettingDbSyncComponent } from './modals/db-sync.component';
 import { SettingProfileComponent } from './modals/profile.component';
 import { SettingAboutComponent } from './modals/about.component';
 import { SettingChangePasswordComponent } from './modals/change-password.component';
+import { Store } from '@ngrx/store';
+import { AppState } from 'src/app/models/app-state';
+import { Observable } from 'rxjs';
+import { UserInfo } from 'src/app/models/user-info';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-setting',
@@ -14,11 +19,15 @@ import { SettingChangePasswordComponent } from './modals/change-password.compone
 })
 export class SettingPage implements OnInit {
   username: string = "James kenneth A. guidaven";
+  userInfo$: Observable<UserInfo>;
 
   constructor(
     private tokenService: TokenService,
     private router: Router,
-    private modalController: ModalController) { }
+    private modalController: ModalController,
+    public store: Store<AppState>) {
+      this.userInfo$ = store.select('userInfo');
+    }
 
   ngOnInit() {}
 
@@ -30,20 +39,27 @@ export class SettingPage implements OnInit {
     await modal.present();
   }
 
-  async showProfilePage() {
-    const modal = await this.modalController.create({
-      component: SettingProfileComponent,
-      componentProps: {
-        username: 'jkguidaven',
-        fullname: 'James Kenneth A. Guidaven',
-        mobile: '+63 929 6998983',
-        phone: '(032) 343 3725',
-        email: 'jkguidaven@gmail.com',
-        address: 'Blk 3 lot 4 Palm heights subd. Tabok II mandaue city cebu'
-      }
-    });
+  showProfilePage() {
+    const subscription = this.userInfo$.subscribe(async (info) => {
+      const names = [];
 
-    await modal.present();
+
+      const modal = await this.modalController.create({
+        component: SettingProfileComponent,
+        componentProps: {
+          username: info.username,
+          fullname: this.mergeName(info.firstname, info.middlename, info.lastname),
+          mobile: info.contact.mobile,
+          phone: info.contact.phone,
+          email: info.contact.email,
+          address: info.current_address,
+          gender: info.gender
+        }
+      });
+
+      subscription.unsubscribe();
+      await modal.present();
+    });
   }
 
   async showChangePasswordPage() {
@@ -62,8 +78,32 @@ export class SettingPage implements OnInit {
     await modal.present();
   }
 
+  get fullName(): Observable<string> {
+    return this.userInfo$.pipe(map(({ firstname, middlename, lastname }) => {
+      return this.mergeName(firstname, middlename, lastname);
+    }));
+  }
+
+  mergeName(firstname, middlename, lastname): string {
+    const names = [];
+
+      if (firstname) {
+        names.push(firstname);
+      }
+
+      if (middlename) {
+        names.push(middlename);
+      }
+
+      if (lastname) {
+        names.push(lastname);
+      }
+
+      return names.join(' ');
+  }
+
   logout() {
-    this.tokenService.set(undefined);
+    this.tokenService.clear();
     this.router.navigate([ 'login' ]);
   }
 }
