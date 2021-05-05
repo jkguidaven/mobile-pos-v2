@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { AppState } from 'src/app/models/app-state';
+import { DBSyncState } from 'src/app/models/db-sync';
 import { UserInfo } from 'src/app/models/user-info';
 
 @Component({
@@ -13,9 +14,11 @@ export class HomePage implements OnInit {
   dailySales: number = 13105.60;
   counto: number;
   userInfo$: Observable<UserInfo>;
+  dbSync$: Observable<DBSyncState>;
 
   constructor(public store: Store<AppState>) {
     this.userInfo$ = store.select('userInfo');
+    this.dbSync$ = store.select('dbSync');
   }
 
   ngOnInit() {

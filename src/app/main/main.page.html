@@ -15,7 +15,7 @@
 </ion-tabs>
 
 <ion-fab vertical="bottom" horizontal="center" slot="fixed">
-    <ion-fab-button>
+    <ion-fab-button [disabled]="!(dbSync$ | async)?.lastSync">
       <ion-icon name="add-circle-outline"></ion-icon>
     </ion-fab-button>
 </ion-fab>

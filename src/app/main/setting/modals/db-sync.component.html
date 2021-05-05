@@ -17,15 +17,18 @@
     Sync your device to the server.
   </ion-text>
 
-  <ion-text class="sync-details" *ngIf="lastSync; else hasNotSync">
-    The last time you have sync your device is {{ lastSync }}
-  </ion-text>
+  <div *ngIf="!(state$ | async)?.synching; else synching">
+    <ion-text class="sync-details">{{ (state$ | async)?.synchingMessage }}</ion-text>
 
-  <ng-template #hasNotSync>
-    <ion-text class="sync-details">You have not yet sync your device to the server.</ion-text>
+    <ion-button expand="block" mode="ios" (click)="sync()">
+      SYNC NOW
+    </ion-button>
+  </div>
+
+  <ng-template #synching>
+    <div class="status-container">
+      <ion-img src="/assets/db-sync.gif"></ion-img>
+      <ion-text class="sync-details">{{ (state$ | async)?.synchingMessage }}</ion-text>
+    </div>
   </ng-template>
-
-  <ion-button expand="block" mode="ios">
-    SYNC NOW
-  </ion-button>
 </ion-content>

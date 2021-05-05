@@ -9,6 +9,8 @@ import { HomePageRoutingModule } from './home-routing.module';
 
 import { HomePage } from './home.page';
 import { ExploreContainerComponentModule } from 'src/app/explore-container/explore-container.module';
+import { NoDbSyncBannerComponent } from './no-db-sync-banner/no-db-sync-banner.component';
+import { SettingDbSyncComponent } from '../setting/modals/db-sync.component';
 
 @NgModule({
   imports: [
@@ -19,6 +21,6 @@ import { ExploreContainerComponentModule } from 'src/app/explore-container/explo
     ExploreContainerComponentModule,
     CountoModule
   ],
-  declarations: [HomePage]
+  declarations: [HomePage, NoDbSyncBannerComponent, SettingDbSyncComponent]
 })
 export class HomePageModule {}

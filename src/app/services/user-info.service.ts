@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { AppState } from '../models/app-state';
-import * as UserInfoActions from '../store/actions/user-info.actions';
+import * as UserInfoActions from '../store/actions/user-info.action';
 import { NativeHttpService } from './native-http.service';
 import { ServerSettingsService } from './server-settings.service';
 

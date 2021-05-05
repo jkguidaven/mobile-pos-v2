@@ -9,7 +9,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { StoreModule } from '@ngrx/store';
 
-import UserInfoReducer from './store/reducers/user-info.actions';
+import UserInfoReducer from './store/reducers/user-info.reducer';
+import dbSyncReducer from './store/reducers/db-sync.reducer';
 
 @NgModule({
   declarations: [AppComponent],
@@ -18,7 +19,7 @@ import UserInfoReducer from './store/reducers/user-info.actions';
     AppRoutingModule,
     BrowserModule,
     IonicModule.forRoot(),
-    StoreModule.forRoot({ userInfo: UserInfoReducer }, {}),
+    StoreModule.forRoot({ userInfo: UserInfoReducer, dbSync: dbSyncReducer }, {}),
     HttpClientModule
   ],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
