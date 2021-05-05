@@ -4,12 +4,15 @@ import { ServerSettingsService } from './server-settings.service';
 
 import '@capacitor-community/http';
 import { Plugins } from '@capacitor/core';
+import { GeolocationWatcherService } from './geolocation-watcher.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  constructor(private serverSettings: ServerSettingsService) {
+  constructor(
+    private serverSettings: ServerSettingsService,
+    private geolocationWatcher: GeolocationWatcherService) {
   }
 
   async validate(token: string): Promise<boolean> {
@@ -36,6 +39,7 @@ export class AuthService {
 
   async authenticate(username: string, password: string): Promise<AuthResult> {
     try {
+      const location = await this.geolocationWatcher.getCurrent();
       const { Http } = Plugins;
       const result: any = await Http.request({
         method: 'POST',
@@ -43,9 +47,8 @@ export class AuthService {
         data: {
           username,
           password,
-          // TO-DO should pull from GPS
-          geolat: 1,
-          geolong: 1
+          geolat: location.latitude,
+          geolong: location.longitude
         },
         headers: {
           'Content-Type': 'application/json'
