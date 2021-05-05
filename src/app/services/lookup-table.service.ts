@@ -42,7 +42,11 @@ export class LookupTableService {
   }
 
   load() {
-
+    const lastSync = localStorage.getItem(STORE_LAST_SYNC_KEY);
+    if (lastSync) {
+      this.store.dispatch(DBSyncActions.setLastSync({ lastSync: new Date(lastSync)}));
+      this.updateSyncMessage(`your last sync was ${lastSync}`);
+    }
   }
 
   async syncTable(table: string, map: string, pullOnce: boolean = false) {
