@@ -44,15 +44,17 @@ export class LoginFormComponent implements OnInit {
 
     this.authService
       .authenticate(username, password)
-      .pipe(finalize(() => this.processing = false))
-      .subscribe((result: AuthResult) => {
+      .then((result: AuthResult) => {
         this.errorMessage = result.message;
 
         if (result.accessToken) {
+          console.log('setting access token to local storage.');
           this.tokenService.set(result.accessToken);
+          console.log('redirecting to main page');
           this.router.navigate([ '/main' ], { replaceUrl: true });
         }
-      });
+      })
+      .finally(() => this.processing = false);
   }
 
   async showServerSettings() {

@@ -1,26 +1,83 @@
-import { invalid } from '@angular/compiler/src/render3/view/util';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { AuthResult } from '../models/auth-result';
+import { ServerSettingsService } from './server-settings.service';
+
+import '@capacitor-community/http';
+import { Plugins } from '@capacitor/core';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  constructor() { }
-
-  validate(token: string): Observable<boolean> {
-    return  of(token === 'VALID');
+  constructor(private serverSettings: ServerSettingsService, private http: HttpClient) {
   }
 
-  authenticate(username: string, password: string): Observable<AuthResult> {
-    const success = username === 'username' &&  password === 'password';
-    return of({
-      result: success
-        ? 'success'
-        : 'fail',
-      accessToken: success ? 'VALID' : undefined,
-      message: success ? undefined : 'invalid credentials'
-    });
+  async validate(token: string): Promise<boolean> {
+    if (!token) {
+      return false;
+    }
+
+    try {
+      const { Http } = Plugins;
+      const result = await Http.request({
+        method: 'GET',
+        url: `${this.serverUrl}/api/user/token`,
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      console.log(result);
+      return true;
+    } catch (ex) {
+      console.error(ex);
+      return Boolean(token);
+    }
+  }
+
+  async authenticate(username: string, password: string): Promise<AuthResult> {
+    try {
+      const { Http } = Plugins;
+      const result: any = await Http.request({
+        method: 'POST',
+        url: `${this.serverUrl}/api/user/token`,
+        data: {
+          username,
+          password,
+          // TO-DO should pull from GPS
+          geolat: 1,
+          geolong: 1
+        },
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (result.data.access_token) {
+        return {
+          result: 'success',
+          accessToken: result.data.access_token,
+          refreshToken: result.data.refresh_token
+        };
+      } else {
+        return {
+          result: 'fail',
+          message: result.data.message
+        };
+      }
+    } catch (ex) {
+      console.error(ex);
+      return {
+        result: 'fail',
+        message: ex.message
+      };
+    }
+  }
+
+  private get serverUrl() {
+    return this.serverSettings.get().serverUrl;;
   }
 }

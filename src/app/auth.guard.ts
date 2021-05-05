@@ -19,11 +19,11 @@ export class AuthGuard implements CanActivate {
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
     const token: string = this.tokenService.get();
 
-    return this.authService.validate(token).pipe(map((valid) => {
+    return this.authService.validate(token).then((valid) => {
       if (!valid) {
         this.router.navigate([ 'login' ]);
       }
       return valid;
-    }));
+    });
   }
 }
