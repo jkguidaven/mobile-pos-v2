@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import { ModalController } from '@ionic/angular';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { AppState } from '../models/app-state';
 import { DBSyncState } from '../models/db-sync';
 import { UserInfoService } from '../services/user-info.service';
+import { CreateTransactionComponent } from './home/modals/create-transaction/create-transaction.component';
 
 @Component({
   selector: 'app-main',
@@ -15,11 +17,21 @@ export class MainPage implements OnInit {
 
   constructor(
     private userInfoService: UserInfoService,
+    private modalController: ModalController,
     public store: Store<AppState>) {
       this.dbSync$ = store.select('dbSync');
     }
 
   ngOnInit() {
     this.userInfoService.load();
+  }
+
+
+  async createTransaction() {
+    const modal = await this.modalController.create({
+      component: CreateTransactionComponent
+    });
+
+    modal.present();
   }
 }

@@ -1,0 +1,15 @@
+<ion-item lines="none">
+  <ion-thumbnail slot="start">
+    <img [src]="image">
+  </ion-thumbnail>
+  <ion-label>
+    <div>
+      <h2>{{ name }}</h2>
+      <p>{{ price | currency:'PHP':'symbol-narrow' }} {{ ' per ' + uom + ' x ' + quantity }}</p>
+    </div>
+
+    <h4>
+      {{ price * quantity | currency:'PHP':'symbol-narrow' }}
+    </h4>
+  </ion-label>
+</ion-item>

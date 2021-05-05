@@ -11,6 +11,8 @@ import { HomePage } from './home.page';
 import { ExploreContainerComponentModule } from 'src/app/explore-container/explore-container.module';
 import { NoDbSyncBannerComponent } from './no-db-sync-banner/no-db-sync-banner.component';
 import { SettingDbSyncComponent } from '../setting/modals/db-sync.component';
+import { CreateTransactionComponent } from './modals/create-transaction/create-transaction.component';
+import { CommonComponentModule } from 'src/app/common/common.module';
 
 @NgModule({
   imports: [
@@ -19,8 +21,9 @@ import { SettingDbSyncComponent } from '../setting/modals/db-sync.component';
     IonicModule,
     HomePageRoutingModule,
     ExploreContainerComponentModule,
-    CountoModule
+    CountoModule,
+    CommonComponentModule
   ],
-  declarations: [HomePage, NoDbSyncBannerComponent, SettingDbSyncComponent]
+  declarations: [HomePage, NoDbSyncBannerComponent, SettingDbSyncComponent, CreateTransactionComponent]
 })
 export class HomePageModule {}

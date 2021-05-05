@@ -1,0 +1,22 @@
+ion-label {
+  display: flex!important;
+  justify-content: space-between;
+}
+
+h4 {
+  color: var(--ion-color-primary);
+}
+
+p {
+  color: rgb(153, 153, 153);
+}
+ion-thumbnail {
+  width:20px;
+  height:20px;
+  opacity: .8;
+}
+
+img {
+  width:auto !important;
+  height:auto !important;
+}

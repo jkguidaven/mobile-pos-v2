@@ -1,0 +1,17 @@
+
+.header-container {
+  background: var(--ion-color-primary);
+  padding: 0 30px 100px 20px;
+  margin-bottom: -50px;
+}
+
+.transaction-items-container {
+  border-top-right-radius: 35px;
+  border-top-left-radius: 35px;
+  background-color: white;
+  padding: 20px 16px;
+}
+
+h3 {
+  font-weight: 400;
+}
