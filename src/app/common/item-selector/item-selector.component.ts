@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { IonicSelectableComponent } from 'ionic-selectable';
 import { Observable, Subscription } from 'rxjs';
@@ -10,7 +10,9 @@ import { LookupTableService } from 'src/app/services/lookup-table.service';
   styleUrls: ['./item-selector.component.css']
 })
 export class ItemSelectorComponent implements OnInit {
-  @Input() control: FormControl = new FormControl();
+  @Input() model: any;
+  @Output() modelChange: EventEmitter<any> = new EventEmitter();
+
   subscription: Subscription;
 
   constructor(private lookupTable: LookupTableService) { }
@@ -41,11 +43,15 @@ export class ItemSelectorComponent implements OnInit {
         return name.includes(text);
       };
 
-      event.component.items = this.lookupTable.searchDataFromCache('customers', filter);
+      event.component.items = this.lookupTable.searchDataFromCache('items', filter);
       subscriber.complete();
       event.component.endSearch();
     });
 
     this.subscription = fetch.subscribe();
+  }
+
+  onChange($event) {
+    this.modelChange.emit($event.value);
   }
 }

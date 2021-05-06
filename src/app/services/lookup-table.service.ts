@@ -18,7 +18,7 @@ export class LookupTableService {
     private store: Store<AppState>,
     private serverSettings: ServerSettingsService,
     private nativeHttp: NativeHttpService) {
-
+    this.db.config.debug = false;
   }
 
   async sync() {
@@ -66,8 +66,8 @@ export class LookupTableService {
     this.db.collection(table);
     this.cache[table] = [];
     this.updateSyncMessage(`Pulling ${table} information from server. please wait a moment.`);
-    let page = 1;
-    let length = 100;
+    let page = 0;
+    let length = 300;
 
     while(true) {
       const result = await this.nativeHttp.request({
@@ -77,6 +77,15 @@ export class LookupTableService {
           page: `${page}`,
           length: `${length}`
         }
+      });
+
+      console.log({
+        url: this.getEndPointByTable(table),
+        page,
+        length,
+        pulledLength: result.data[map].length,
+        lastPage: result.data.last_page,
+        total: result.data.total
       });
 
       if (result.status === 200) {

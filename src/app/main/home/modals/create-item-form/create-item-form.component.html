@@ -9,19 +9,19 @@
 </ion-toolbar>
 
 <ion-content class="ion-padding">
-  <app-item-selector></app-item-selector>
+  <app-item-selector [(model)]="item" (modelChange)="onItemChange($event)"></app-item-selector>
 
   <ion-item>
     <ion-label position="floating">Quantity</ion-label>
-    <ion-input type="number"></ion-input>
+    <ion-input type="number" inputmode="numeric" [formControl]="quantityControl"></ion-input>
   </ion-item>
 
   <ion-item>
     <ion-label position="floating">Price</ion-label>
-    <ion-input type="number"></ion-input>
+    <ion-input type="number" inputmode="decimal" [formControl]="priceControl"></ion-input>
   </ion-item>
 
-  <ion-button expand="block">
+  <ion-button expand="block" [disabled]="!hasItem" (click)="addItem()">
     Add Item
   </ion-button>
 </ion-content>

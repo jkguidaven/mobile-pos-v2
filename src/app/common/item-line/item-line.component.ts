@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, Output } from '@angular/core';
 
 @Component({
   selector: 'app-item-line',
@@ -8,7 +8,7 @@ import { Component, Input, OnInit } from '@angular/core';
 export class ItemLineComponent implements OnInit {
   @Input() name: string;
   @Input() quantity: number;
-  @Input() uom: string;
+  @Input() unit: string;
   @Input() price: number;
 
   constructor() { }
@@ -17,9 +17,9 @@ export class ItemLineComponent implements OnInit {
   }
 
   get image(): string {
-    const uom  = this.uom.toLowerCase();
+    const unit  = this.unit.trim().toLowerCase();
 
-    switch(uom) {
+    switch(unit) {
       case 'pack':
       case 'box':
       case 'carton':

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Component({
   selector: 'app-add-item-line',
@@ -6,6 +6,8 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./add-item-line.component.css']
 })
 export class AddItemLineComponent implements OnInit {
+  @Input() disabled: boolean;
+  @Output() add: EventEmitter<void> = new EventEmitter();
 
   constructor() { }
 

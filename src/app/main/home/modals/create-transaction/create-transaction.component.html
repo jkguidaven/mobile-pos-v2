@@ -15,24 +15,22 @@
   </div>
 
   <div class="header-container">
-    <app-customer-selector></app-customer-selector>
+    <app-customer-selector [(model)]="customer"></app-customer-selector>
 
     <ion-item lines="none" class="datepicker">
       <ion-label position="floating">Booking Date</ion-label>
-      <ion-datetime value="1990-02-19"></ion-datetime>
+      <ion-datetime [formControl]="dateControl"></ion-datetime>
     </ion-item>
   </div>
 
   <div class="transaction-items-container">
-    <app-item-line name="Sample item 1" [quantity]="10" [price]="5.5" uom="bag"></app-item-line>
-    <app-item-line name="Sample item 2" [quantity]="120" [price]="51.5" uom="box"></app-item-line>
-    <app-item-line name="Sample item 3" [quantity]="50" [price]="4.0" uom="roll"></app-item-line>
-    <app-item-line name="Sample item 4" [quantity]="3" [price]="32.1" uom="pack"></app-item-line>
-    <app-item-line name="Sample item 4" [quantity]="1" [price]="5.0" uom="kilogram"></app-item-line>
-    <app-item-line name="Sample item 4" [quantity]="1" [price]="5.0" uom="gallon"></app-item-line>
-    <app-item-line name="Sample item 4" [quantity]="1" [price]="5.0" uom="jar"></app-item-line>
-    <app-item-line name="Sample item 4" [quantity]="1" [price]="5.0" uom="piece"></app-item-line>
-    <app-add-item-line (click)="showCreateItemForm()"></app-add-item-line>
+    <app-item-line *ngFor="let item of items"
+      [name]="item.name"
+      [quantity]="item.quantity"
+      [price]="item.price"
+      [unit]="item.unit">
+    </app-item-line>
+    <app-add-item-line [disabled]="!hasCustomer" (add)="showCreateItemForm()"></app-add-item-line>
   </div>
 
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">

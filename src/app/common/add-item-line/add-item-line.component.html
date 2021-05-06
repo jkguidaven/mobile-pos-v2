@@ -1,4 +1,4 @@
-<ion-card mode="ios" button>
+<ion-card mode="ios" button [disabled]="disabled" (click)="add.emit()">
   <ion-card-content>
     Add New item <ion-icon name="add-circle-outline"></ion-icon>
   </ion-card-content>

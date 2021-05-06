@@ -2,12 +2,13 @@
 
 <ion-item lines="none">
   <ionic-selectable
-    [formControl]="control"
+    [(ngModel)]="model"
     ngDefaultControl
     itemValueField="id"
     itemTextField="name"
     [canSearch]="true"
-    (onSearch)="searchCustomer($event)">
+    (onSearch)="searchCustomer($event)"
+    (onChange)="onChange($event)">
     <ng-template ionicSelectableCloseButtonTemplate>
       <ion-icon name="arrow-back-outline"></ion-icon>
     </ng-template>

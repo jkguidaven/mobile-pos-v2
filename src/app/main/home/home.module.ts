@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CountoModule } from 'angular2-counto';
 
 import { IonicModule } from '@ionic/angular';
@@ -19,6 +19,7 @@ import { CreateItemFormComponent } from './modals/create-item-form/create-item-f
   imports: [
     CommonModule,
     FormsModule,
+    ReactiveFormsModule,
     IonicModule,
     HomePageRoutingModule,
     ExploreContainerComponentModule,

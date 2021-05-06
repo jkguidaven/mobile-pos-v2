@@ -9,12 +9,18 @@ import { CreateItemFormComponent } from '../create-item-form/create-item-form.co
   styleUrls: ['./create-transaction.component.scss']
 })
 export class CreateTransactionComponent implements OnInit {
-  customerControl: FormControl = new FormControl();
+  customer: any;
   dateControl: FormControl = new FormControl();
+  items: any = [];
+
 
   constructor(private modalController: ModalController) { }
 
   ngOnInit(): void {
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    this.dateControl.setValue(`${tomorrow.getFullYear()}-${tomorrow.getMonth()+1}-${tomorrow.getDate()}`);
   }
 
   dismiss() {
@@ -22,7 +28,7 @@ export class CreateTransactionComponent implements OnInit {
   }
 
   get hasCustomer() {
-    return Boolean(this.customerControl.value);
+    return Boolean(this.customer);
   }
 
   get hasDate() {
@@ -41,9 +47,17 @@ export class CreateTransactionComponent implements OnInit {
     const modal = await this.modalController.create({
       component: CreateItemFormComponent,
       cssClass: 'small-modal',
-      id: 'create-item-form'
+      id: 'create-item-form',
+      componentProps: {
+        pricescheme: this.customer.price_scheme
+      }
     });
 
-    await modal.present();
+    modal.present();
+
+    const { data } = await modal.onWillDismiss();
+    if (data) {
+      this.items.push(data);
+    }
   }
 }

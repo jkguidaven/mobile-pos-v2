@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormControl } from '@angular/forms';
 import { IonicSelectableComponent } from 'ionic-selectable';
 import { Observable, Subscription } from 'rxjs';
 import { LookupTableService } from 'src/app/services/lookup-table.service';
@@ -10,7 +9,9 @@ import { LookupTableService } from 'src/app/services/lookup-table.service';
   styleUrls: ['./customer-selector.component.css']
 })
 export class CustomerSelectorComponent implements OnInit {
-  @Input() control: FormControl = new FormControl();
+  @Input() model: any;
+  @Output() modelChange: EventEmitter<any> = new EventEmitter();
+
   subscription: Subscription;
 
   constructor(private lookupTable: LookupTableService) { }
@@ -47,5 +48,12 @@ export class CustomerSelectorComponent implements OnInit {
     });
 
     this.subscription = fetch.subscribe();
+  }
+
+  onChange($event) {
+    const withPriceScheme = { ...$event.value };
+    withPriceScheme.price_scheme = this.lookupTable
+      .searchDataFromCache('price_schemes', (scheme) => scheme.id === withPriceScheme.price_scheme_id)[0];
+    this.modelChange.emit(withPriceScheme);
   }
 }
