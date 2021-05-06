@@ -1,0 +1,15 @@
+<ion-text class="ion-text-center">Select a Customer</ion-text>
+
+<ion-item lines="full">
+  <ionic-selectable
+    [formControl]="control"
+    ngDefaultControl
+    itemValueField="id"
+    itemTextField="name"
+    [canSearch]="true"
+    (onSearch)="searchCustomer($event)">
+    <ng-template ionicSelectableCloseButtonTemplate>
+      <ion-icon name="arrow-back-outline"></ion-icon>
+    </ng-template>
+  </ionic-selectable>
+</ion-item>

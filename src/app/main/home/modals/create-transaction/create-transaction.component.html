@@ -5,29 +5,42 @@
     </ion-button>
   </ion-buttons>
 
-  <ion-title>Create Transaction</ion-title>
+  <ion-title>
+    Add Transaction
+  </ion-title>
 </ion-toolbar>
 
 <ion-content>
+  <div class="spacer">
+  </div>
+
   <div class="header-container">
-    <ion-item color="primary">
-      <ion-label position="floating">Customer</ion-label>
-      <ion-input></ion-input>
+    <app-customer-selector></app-customer-selector>
+
+    <ion-item>
+      <ion-label position="floating">Booking Date</ion-label>
+      <ion-datetime value="1990-02-19"></ion-datetime>
     </ion-item>
   </div>
 
   <div class="transaction-items-container">
-    <ion-text><h3>Items</h3></ion-text>
+    <div class="item-header">
+      <ion-text>Item list</ion-text>
+    </div>
 
-    <ion-list>
-      <app-item-line name="Sample item 1" [quantity]="10" [price]="5.5" uom="bag"></app-item-line>
-      <app-item-line name="Sample item 2" [quantity]="120" [price]="51.5" uom="box"></app-item-line>
-      <app-item-line name="Sample item 3" [quantity]="50" [price]="4.0" uom="roll"></app-item-line>
-      <app-item-line name="Sample item 4" [quantity]="3" [price]="32.1" uom="pack"></app-item-line>
-      <app-item-line name="Sample item 4" [quantity]="1" [price]="5.0" uom="kilogram"></app-item-line>
-      <app-item-line name="Sample item 4" [quantity]="1" [price]="5.0" uom="gallon"></app-item-line>
-      <app-item-line name="Sample item 4" [quantity]="1" [price]="5.0" uom="jar"></app-item-line>
-      <app-item-line name="Sample item 4" [quantity]="1" [price]="5.0" uom="piece"></app-item-line>
-    </ion-list>
+    <app-item-line name="Sample item 1" [quantity]="10" [price]="5.5" uom="bag"></app-item-line>
+    <app-item-line name="Sample item 2" [quantity]="120" [price]="51.5" uom="box"></app-item-line>
+    <app-item-line name="Sample item 3" [quantity]="50" [price]="4.0" uom="roll"></app-item-line>
+    <app-item-line name="Sample item 4" [quantity]="3" [price]="32.1" uom="pack"></app-item-line>
+    <app-item-line name="Sample item 4" [quantity]="1" [price]="5.0" uom="kilogram"></app-item-line>
+    <app-item-line name="Sample item 4" [quantity]="1" [price]="5.0" uom="gallon"></app-item-line>
+    <app-item-line name="Sample item 4" [quantity]="1" [price]="5.0" uom="jar"></app-item-line>
+    <app-item-line name="Sample item 4" [quantity]="1" [price]="5.0" uom="piece"></app-item-line>
   </div>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button [disabled]="!canSubmit">
+      <ion-icon name="send"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>

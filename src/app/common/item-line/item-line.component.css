@@ -3,6 +3,14 @@ ion-label {
   justify-content: space-between;
 }
 
+ion-card {
+  margin: 10px 16px;
+}
+
+ion-card-content {
+  padding: 0;
+}
+
 h4 {
   color: var(--ion-color-primary);
 }

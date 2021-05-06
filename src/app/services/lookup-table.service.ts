@@ -13,6 +13,7 @@ const STORE_LAST_SYNC_KEY = 'last_db_sync';
 })
 export class LookupTableService {
   private db: Localbase = new Localbase('db');
+  private cache:any = {};
   constructor(
     private store: Store<AppState>,
     private serverSettings: ServerSettingsService,
@@ -41,16 +42,29 @@ export class LookupTableService {
     this.store.dispatch(DBSyncActions.setSynching({ synching: false }));
   }
 
-  load() {
+  async load() {
     const lastSync = localStorage.getItem(STORE_LAST_SYNC_KEY);
     if (lastSync) {
       this.store.dispatch(DBSyncActions.setLastSync({ lastSync: new Date(lastSync)}));
       this.updateSyncMessage(`your last sync was ${lastSync}`);
+      await this.loadCache('customers');
+      await this.loadCache('items');
+      await this.loadCache('payment_methods');
+      await this.loadCache('price_schemes');
     }
+  }
+
+  async loadCache(table: string) {
+    this.cache[table] = await this.db.collection(table).get()
+  }
+
+  searchDataFromCache(name: string, filter: (obj: any) => boolean) {
+    return this.cache[name].filter(filter);
   }
 
   async syncTable(table: string, map: string, pullOnce: boolean = false) {
     this.db.collection(table);
+    this.cache[table] = [];
     this.updateSyncMessage(`Pulling ${table} information from server. please wait a moment.`);
     let page = 1;
     let length = 100;
@@ -68,6 +82,7 @@ export class LookupTableService {
       if (result.status === 200) {
         result.data[map].forEach(row => {
           this.db.collection(table).add(row);
+          this.cache[table].push(row);
         });
 
         if (page === result.data.last_page || result.data[map].length === 0 || pullOnce) {
