@@ -33,3 +33,8 @@ ion-title {
 .datepicker {
   margin-top: 16px;
 }
+
+.fab-button-disabled {
+  opacity: 1;
+  filter: grayscale(1) brightness(3);
+}

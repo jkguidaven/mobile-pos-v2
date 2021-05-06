@@ -5,9 +5,10 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ItemLineComponent } from './item-line/item-line.component';
 import { CustomerSelectorComponent } from './customer-selector/customer-selector.component';
 import { IonicSelectableModule } from 'ionic-selectable';
+import { AddItemLineComponent } from './add-item-line/add-item-line.component';
 
 @NgModule({
-  declarations: [PasswordFieldComponent, ItemLineComponent, CustomerSelectorComponent],
+  declarations: [PasswordFieldComponent, ItemLineComponent, CustomerSelectorComponent, AddItemLineComponent],
   imports: [
     CommonModule,
     FormsModule,
@@ -17,7 +18,8 @@ import { IonicSelectableModule } from 'ionic-selectable';
     PasswordFieldComponent,
     ItemLineComponent,
     CustomerSelectorComponent,
-    IonicSelectableModule
+    IonicSelectableModule,
+    AddItemLineComponent
   ]
 })
 export class CommonComponentModule { }
