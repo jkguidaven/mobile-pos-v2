@@ -6,9 +6,16 @@ import { ItemLineComponent } from './item-line/item-line.component';
 import { CustomerSelectorComponent } from './customer-selector/customer-selector.component';
 import { IonicSelectableModule } from 'ionic-selectable';
 import { AddItemLineComponent } from './add-item-line/add-item-line.component';
+import { ItemSelectorComponent } from './item-selector/item-selector.component';
 
 @NgModule({
-  declarations: [PasswordFieldComponent, ItemLineComponent, CustomerSelectorComponent, AddItemLineComponent],
+  declarations: [
+    PasswordFieldComponent,
+    ItemLineComponent,
+    CustomerSelectorComponent,
+    AddItemLineComponent,
+    ItemSelectorComponent
+  ],
   imports: [
     CommonModule,
     FormsModule,
@@ -19,7 +26,8 @@ import { AddItemLineComponent } from './add-item-line/add-item-line.component';
     ItemLineComponent,
     CustomerSelectorComponent,
     IonicSelectableModule,
-    AddItemLineComponent
+    AddItemLineComponent,
+    ItemSelectorComponent
   ]
 })
 export class CommonComponentModule { }

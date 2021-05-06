@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
+import { CreateItemFormComponent } from '../create-item-form/create-item-form.component';
 
 @Component({
   selector: 'app-create-transaction',
   templateUrl: './create-transaction.component.html',
-  styleUrls: ['./create-transaction.component.css']
+  styleUrls: ['./create-transaction.component.scss']
 })
 export class CreateTransactionComponent implements OnInit {
   customerControl: FormControl = new FormControl();
@@ -34,5 +35,15 @@ export class CreateTransactionComponent implements OnInit {
 
   get canSubmit() {
     return this.hasCustomer && this.hasDate && this.hasItems;
+  }
+
+  async showCreateItemForm() {
+    const modal = await this.modalController.create({
+      component: CreateItemFormComponent,
+      cssClass: 'small-modal',
+      id: 'create-item-form'
+    });
+
+    await modal.present();
   }
 }

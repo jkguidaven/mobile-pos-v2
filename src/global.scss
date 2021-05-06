@@ -24,3 +24,16 @@
 @import "~@ionic/angular/css/text-alignment.css";
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
+
+
+.small-modal{
+  --backdrop-opacity: var(--ion-backdrop-opacity, 0.4);
+
+  .modal-wrapper {
+      max-width: 80%;
+      height: 55%;
+      box-shadow: rgb(0 0 0 / 12%) 0px 4px 16px;
+      border-radius: 8px;
+  }
+}
+

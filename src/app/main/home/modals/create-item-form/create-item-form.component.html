@@ -1,0 +1,27 @@
+<ion-toolbar>
+  <ion-buttons slot="start">
+    <ion-button (click)="dismiss()">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+
+      Back
+    </ion-button>
+  </ion-buttons>
+</ion-toolbar>
+
+<ion-content class="ion-padding">
+  <app-item-selector></app-item-selector>
+
+  <ion-item>
+    <ion-label position="floating">Quantity</ion-label>
+    <ion-input type="number"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="floating">Price</ion-label>
+    <ion-input type="number"></ion-input>
+  </ion-item>
+
+  <ion-button expand="block">
+    Add Item
+  </ion-button>
+</ion-content>
