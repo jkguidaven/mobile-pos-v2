@@ -13,7 +13,6 @@ import { NoDbSyncBannerComponent } from './no-db-sync-banner/no-db-sync-banner.c
 import { SettingDbSyncComponent } from '../setting/modals/db-sync.component';
 import { CreateTransactionComponent } from './modals/create-transaction/create-transaction.component';
 import { CommonComponentModule } from 'src/app/common/common.module';
-import { NgSelectModule } from '@ng-select/ng-select';
 
 @NgModule({
   imports: [
@@ -23,8 +22,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
     HomePageRoutingModule,
     ExploreContainerComponentModule,
     CountoModule,
-    CommonComponentModule,
-    NgSelectModule
+    CommonComponentModule
   ],
   declarations: [HomePage, NoDbSyncBannerComponent, SettingDbSyncComponent, CreateTransactionComponent]
 })

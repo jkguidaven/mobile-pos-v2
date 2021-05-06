@@ -17,17 +17,13 @@
   <div class="header-container">
     <app-customer-selector></app-customer-selector>
 
-    <ion-item>
+    <ion-item lines="none" class="datepicker">
       <ion-label position="floating">Booking Date</ion-label>
       <ion-datetime value="1990-02-19"></ion-datetime>
     </ion-item>
   </div>
 
   <div class="transaction-items-container">
-    <div class="item-header">
-      <ion-text>Item list</ion-text>
-    </div>
-
     <app-item-line name="Sample item 1" [quantity]="10" [price]="5.5" uom="bag"></app-item-line>
     <app-item-line name="Sample item 2" [quantity]="120" [price]="51.5" uom="box"></app-item-line>
     <app-item-line name="Sample item 3" [quantity]="50" [price]="4.0" uom="roll"></app-item-line>

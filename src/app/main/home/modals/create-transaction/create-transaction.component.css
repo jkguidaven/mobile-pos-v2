@@ -14,9 +14,7 @@
 
 .transaction-items-container {
   padding: 16px 0 100px;
-  margin-top: 16px;
-  background-color: #f3f3f3;
-  border-top: 1px solid #dedede;
+  border-top: 1px solid rgb(233, 233, 233);
 }
 
 ion-title {
@@ -24,12 +22,14 @@ ion-title {
 }
 
 .item-header {
-  display: flex;
-  justify-content: space-between;
-  margin: 0 10px;
+  text-align: center;
 }
 
 .item-header h3 {
   font-weight: 300;
   font-size: 18px;
+}
+
+.datepicker {
+  margin-top: 16px;
 }
