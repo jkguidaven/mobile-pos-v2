@@ -12,6 +12,7 @@ import { StoreModule } from '@ngrx/store';
 import UserInfoReducer from './store/reducers/user-info.reducer';
 import dbSyncReducer from './store/reducers/db-sync.reducer';
 import locationReducer from './store/reducers/location.reducer';
+import transactionQueueReducer from './store/reducers/transaction-queue.reducer';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
 
 @NgModule({
@@ -24,7 +25,8 @@ import { Geolocation } from '@ionic-native/geolocation/ngx';
     StoreModule.forRoot({
       userInfo: UserInfoReducer,
       dbSync: dbSyncReducer,
-      location: locationReducer
+      location: locationReducer,
+      transactionQueue: transactionQueueReducer
     }, {}),
     HttpClientModule
   ],

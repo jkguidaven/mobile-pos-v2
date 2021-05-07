@@ -1,0 +1,35 @@
+.container {
+  border-radius: 20px;
+  padding: 0 0 30px;
+  background-color: white;
+  margin: 16px;
+}
+
+ion-title {
+  padding: 20px;
+  font-size: 18px;
+  font-weight: bolder;
+}
+
+.main-description {
+  font-size: 16px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+
+  div {
+    max-width: 80%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  h2 {
+    font-weight: bold;
+  }
+
+  h4 {
+    color: var(--ion-color-primary);
+  }
+
+}

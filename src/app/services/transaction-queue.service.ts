@@ -1,17 +1,43 @@
 import { Injectable } from '@angular/core';
+import { Store } from '@ngrx/store';
 import Localbase from 'localbase';
+import { AppState } from '../models/app-state';
+import { Transaction } from '../models/transaction';
+import * as actions from '../store/actions/transaction-queue.action';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TransactionQueueService {
   private db: Localbase;
-  constructor() {
+  constructor(private store: Store<AppState>) {
     this.db = new Localbase('db');
   }
 
-  addToQueue(task: any) {
-    this.db.collection('queue').add(task);
+  async load() {
+    this.store.dispatch(actions.clearTransaction());
+    const data = await this.db.collection('queue').get({ keys: true });
+
+    data.forEach(transaction => {
+      this.store.dispatch(actions.pushTransaction({
+        transaction: {
+          ...transaction.data,
+          localId: transaction.key
+        }
+      }));
+    });
+
+    this.eventLoop();
+  }
+
+  async addToQueue(transaction: Transaction) {
+    const result = await this.db.collection('queue').add(transaction);
+    this.store.dispatch(actions.pushTransaction({
+      transaction: {
+        ...result.data.data,
+        localId: result.data.key
+      }
+    }));
   }
 
   checkCurrentTransaction(): Promise<any> {
@@ -22,12 +48,12 @@ export class TransactionQueueService {
 
   async removeFromQueue(key: string) {
     this.db.collection('queue').doc(key).delete();
+    this.store.dispatch(actions.removeTransaction({ localId: key }));
   }
 
   async eventLoop() {
     await this.handleQueue();
     setTimeout(() => {
-      console.log('event queue');
       this.eventLoop();
     }, 1000);
   }

@@ -25,7 +25,7 @@
             class="value"
             counto
             [step]="30"
-            [countTo]="dailySales"
+            [countTo]="(transactionQueue$ | async)?.total || 0"
             [countFrom]="0"
             [duration]="1"
             (countoChange)="counto = $event"
@@ -38,5 +38,6 @@
   <app-no-db-sync-banner *ngIf="!(dbSync$ | async)?.lastSync; else main"></app-no-db-sync-banner>
 
   <ng-template #main>
+    <app-transaction-list [transactions]="(transactionQueue$ | async)?.transactions"></app-transaction-list>
   </ng-template>
 </ion-content>

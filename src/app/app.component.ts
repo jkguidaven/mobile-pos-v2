@@ -17,6 +17,6 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.geolocationWatcher.watch();
     this.lookuptableService.load();
-    this.transactionQueue.eventLoop();
+    this.transactionQueue.load();
   }
 }

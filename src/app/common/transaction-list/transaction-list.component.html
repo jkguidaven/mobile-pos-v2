@@ -1,0 +1,20 @@
+<div class="container">
+  <ion-title>Transaction List</ion-title>
+
+  <ion-list lines="full">
+    <ion-item button *ngFor="let transaction of transactions">
+      <ion-label class="main-description">
+        <div>
+          <h2>{{ transaction.customer_description }}</h2>
+          <p>Booking Date: <span style.color="lightgrey">{{ transaction.booking_date }}</span></p>
+          <p>Current status: <span [style.color]="getStatusColor(transaction)">{{ transaction.status }}</span></p>
+        </div>
+
+        <h4>
+          {{  getTotal(transaction) | currency:'PHP':'symbol-narrow' }}
+        </h4>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+</div>

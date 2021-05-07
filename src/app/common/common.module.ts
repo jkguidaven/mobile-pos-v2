@@ -7,6 +7,7 @@ import { CustomerSelectorComponent } from './customer-selector/customer-selector
 import { IonicSelectableModule } from 'ionic-selectable';
 import { AddItemLineComponent } from './add-item-line/add-item-line.component';
 import { ItemSelectorComponent } from './item-selector/item-selector.component';
+import { TransactionListComponent } from './transaction-list/transaction-list.component';
 
 @NgModule({
   declarations: [
@@ -14,7 +15,8 @@ import { ItemSelectorComponent } from './item-selector/item-selector.component';
     ItemLineComponent,
     CustomerSelectorComponent,
     AddItemLineComponent,
-    ItemSelectorComponent
+    ItemSelectorComponent,
+    TransactionListComponent
   ],
   imports: [
     CommonModule,
@@ -27,7 +29,8 @@ import { ItemSelectorComponent } from './item-selector/item-selector.component';
     CustomerSelectorComponent,
     IonicSelectableModule,
     AddItemLineComponent,
-    ItemSelectorComponent
+    ItemSelectorComponent,
+    TransactionListComponent
   ]
 })
 export class CommonComponentModule { }

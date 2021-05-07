@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
+import { Transaction } from 'src/app/models/transaction';
+import { GeolocationWatcherService } from 'src/app/services/geolocation-watcher.service';
 import { CreateItemFormComponent } from '../create-item-form/create-item-form.component';
 
 @Component({
@@ -14,7 +16,9 @@ export class CreateTransactionComponent implements OnInit {
   items: any = [];
 
 
-  constructor(private modalController: ModalController) { }
+  constructor(
+    private modalController: ModalController,
+    private geolocationService: GeolocationWatcherService) { }
 
   ngOnInit(): void {
     const today = new Date();
@@ -94,11 +98,24 @@ export class CreateTransactionComponent implements OnInit {
     }, 0);
   }
 
-  save() {
-    this.modalController.dismiss({
-      customer: this.customer,
-      date: this.dateControl.value,
+  async save() {
+    const booking_date = new Date();
+    const rawBookingDate = this.dateControl.value.split('-');
+    booking_date.setFullYear(rawBookingDate[0]);
+    booking_date.setMonth(rawBookingDate[1]-1);
+    booking_date.setDate(rawBookingDate[2]);
+
+    const geolocation = await this.geolocationService.getCurrent();
+
+    const transaction: Transaction = {
+      customer: this.customer.id,
+      customer_description: this.customer.name,
+      booking_date,
+      geolocation,
+      status: 'pending',
       items: this.items
-    });
+    };
+
+    this.modalController.dismiss(transaction);
   }
 }
