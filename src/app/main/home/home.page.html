@@ -35,7 +35,7 @@
     </ion-card-content>
   </ion-card>
 
-  <app-no-db-sync-banner *ngIf="!(dbSync$ | async)?.lasSync; else main"></app-no-db-sync-banner>
+  <app-no-db-sync-banner *ngIf="!(dbSync$ | async)?.lastSync; else main"></app-no-db-sync-banner>
 
   <ng-template #main>
   </ng-template>

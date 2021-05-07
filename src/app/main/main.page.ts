@@ -4,6 +4,7 @@ import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { AppState } from '../models/app-state';
 import { DBSyncState } from '../models/db-sync';
+import { TransactionQueueService } from '../services/transaction-queue.service';
 import { UserInfoService } from '../services/user-info.service';
 import { CreateTransactionComponent } from './home/modals/create-transaction/create-transaction.component';
 
@@ -18,6 +19,7 @@ export class MainPage implements OnInit {
   constructor(
     private userInfoService: UserInfoService,
     private modalController: ModalController,
+    private transactionQueue: TransactionQueueService,
     public store: Store<AppState>) {
       this.dbSync$ = store.select('dbSync');
     }
@@ -36,7 +38,7 @@ export class MainPage implements OnInit {
     const { data } = await modal.onWillDismiss();
 
     if (data) {
-      console.log(data);
+      this.transactionQueue.addToQueue(data);
     }
   }
 }
