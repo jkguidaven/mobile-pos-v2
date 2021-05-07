@@ -33,5 +33,10 @@ export class MainPage implements OnInit {
     });
 
     modal.present();
+    const { data } = await modal.onWillDismiss();
+
+    if (data) {
+      console.log(data);
+    }
   }
 }

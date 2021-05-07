@@ -17,10 +17,7 @@ export class UserInfoService {
     private serverSettings: ServerSettingsService) { }
 
   load() {
-    const info = localStorage.getItem(STORE_KEY)
-      ? JSON.parse(localStorage.getItem(STORE_KEY))
-      : undefined;
-
+    const info = this.get();
     this.store.dispatch(UserInfoActions.setUserInfo({ info }));
   }
 
@@ -44,5 +41,11 @@ export class UserInfoService {
   clear() {
     localStorage.removeItem(STORE_KEY);
     this.store.dispatch(UserInfoActions.clearUserInfo());
+  }
+
+  get() {
+    return localStorage.getItem(STORE_KEY)
+      ? JSON.parse(localStorage.getItem(STORE_KEY))
+      : undefined;
   }
 }

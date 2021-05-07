@@ -24,17 +24,24 @@
   </div>
 
   <div class="transaction-items-container">
-    <app-item-line *ngFor="let item of items"
+    <app-item-line *ngFor="let item of items; let i = index"
       [name]="item.name"
       [quantity]="item.quantity"
       [price]="item.price"
-      [unit]="item.unit">
+      [unit]="item.unit"
+      (delete)="deleteItemIndexByIndex(i)"
+      (update)="updateItem(i)"
+    >
     </app-item-line>
     <app-add-item-line [disabled]="!hasCustomer" (add)="showCreateItemForm()"></app-add-item-line>
   </div>
 
+  <div class="amount-container">
+    <ion-text>Total amount: <b>{{ totalAmount | currency:'PHP':'symbol-narrow' }}</b></ion-text>
+  </div>
+
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button [disabled]="!canSubmit">
+    <ion-fab-button [disabled]="!canSubmit" (click)="save()">
       <ion-icon name="send"></ion-icon>
     </ion-fab-button>
   </ion-fab>

@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { IonicSelectableComponent } from 'ionic-selectable';
 import { Observable, Subscription } from 'rxjs';
 import { LookupTableService } from 'src/app/services/lookup-table.service';
+import { UserInfoService } from 'src/app/services/user-info.service';
 
 @Component({
   selector: 'app-customer-selector',
@@ -11,12 +12,14 @@ import { LookupTableService } from 'src/app/services/lookup-table.service';
 export class CustomerSelectorComponent implements OnInit {
   @Input() model: any;
   @Output() modelChange: EventEmitter<any> = new EventEmitter();
+  agentId: number;
 
   subscription: Subscription;
 
-  constructor(private lookupTable: LookupTableService) { }
+  constructor(private lookupTable: LookupTableService, private userInfoService: UserInfoService) { }
 
   ngOnInit(): void {
+    this.agentId = this.userInfoService.get().id;
   }
 
   searchCustomer(event: {
@@ -39,7 +42,7 @@ export class CustomerSelectorComponent implements OnInit {
     const fetch = new Observable((subscriber) => {
       const filter = (customer) => {
         const name = customer.name.trim().toLowerCase();
-        return name.includes(text);
+        return name.includes(text) && this.agentId === customer.agent_id;
       };
 
       event.component.items = this.lookupTable.searchDataFromCache('customers', filter);

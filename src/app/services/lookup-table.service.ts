@@ -63,7 +63,7 @@ export class LookupTableService {
   }
 
   async syncTable(table: string, map: string, pullOnce: boolean = false) {
-    this.db.collection(table);
+    this.db.collection(table).delete();
     this.cache[table] = [];
     this.updateSyncMessage(`Pulling ${table} information from server. please wait a moment.`);
     let page = 0;

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Component({
   selector: 'app-item-line',
@@ -10,6 +10,9 @@ export class ItemLineComponent implements OnInit {
   @Input() quantity: number;
   @Input() unit: string;
   @Input() price: number;
+
+  @Output() delete: EventEmitter<void> = new EventEmitter();
+  @Output() update: EventEmitter<void> = new EventEmitter();
 
   constructor() { }
 

@@ -22,6 +22,6 @@
   </ion-item>
 
   <ion-button expand="block" [disabled]="!hasItem" (click)="addItem()">
-    Add Item
+    {{ updateMode ? 'Update item' : 'Add Item' }}
   </ion-button>
 </ion-content>

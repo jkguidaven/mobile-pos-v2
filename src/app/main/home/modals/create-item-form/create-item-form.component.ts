@@ -10,9 +10,10 @@ import { ModalController } from '@ionic/angular';
 export class CreateItemFormComponent implements OnInit {
   @Input() pricescheme: any;
 
-  item: any;
-  quantityControl: FormControl = new FormControl(1);
-  priceControl: FormControl = new FormControl(0);
+  @Input() item: any;
+  @Input() quantityControl: FormControl = new FormControl(1);
+  @Input() priceControl: FormControl = new FormControl(0);
+  @Input() updateMode: boolean;
 
   constructor(private modalController: ModalController) { }
 

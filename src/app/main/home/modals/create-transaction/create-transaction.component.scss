@@ -38,3 +38,10 @@ ion-title {
   opacity: 1;
   filter: grayscale(1) brightness(3);
 }
+
+.amount-container {
+  position: absolute;
+  left: 16px;
+  bottom: 25px;
+  font-weight: 200;
+}
