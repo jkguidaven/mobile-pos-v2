@@ -112,8 +112,10 @@ export class CreateTransactionComponent implements OnInit {
       customer_description: this.customer.name,
       booking_date,
       geolocation,
-      status: 'pending',
-      items: this.items
+      status: 'queue',
+      unsubmittedChange: true,
+      items: this.items,
+      created_date: new Date()
     };
 
     this.modalController.dismiss(transaction);
