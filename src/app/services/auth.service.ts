@@ -18,22 +18,15 @@ export class AuthService {
   async validate(token: string): Promise<boolean> {
     if (!token) {
       return false;
-    }
+    } else {
+      try {
+        const payload = this.decode(token);
+        return payload.exp > new Date().getTime();
+      } catch(ex) {
+        console.log(ex);
+      }
 
-    try {
-      const { Http } = Plugins;
-      const result = await Http.request({
-        method: 'GET',
-        url: `${this.serverUrl}/api/user/token`,
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      return result.status === 200;
-    } catch (ex) {
-      console.error(ex);
-      return Boolean(token);
+      return true;
     }
   }
 
@@ -78,5 +71,10 @@ export class AuthService {
 
   private get serverUrl() {
     return this.serverSettings.get().serverUrl;;
+  }
+
+  private decode(token) {
+    const parts = token.split('.');
+    return JSON.parse(atob(parts[1]));
   }
 }
