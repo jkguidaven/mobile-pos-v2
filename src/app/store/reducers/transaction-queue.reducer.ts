@@ -38,14 +38,16 @@ const transactionListReducer = createReducer(
   }),
 
   on(actions.updateTransaction, (state, { localId, transaction }) => {
-    const index = state.transactions.findIndex((transaction) => {
-      return transaction.localId === localId
-    });
-
-    state.transactions[index] = {
-      ...state.transactions[index],
-      ...transaction
-    }
+    const newTransactions = state.transactions.map((toUpdate) => {
+      if (toUpdate.localId === localId) {
+        return {
+          ...toUpdate,
+          ...transaction
+        };
+      } else {
+        return transaction;
+      }
+    })
 
     const total = state.transactions.reduce((total, transaction) => {
       const subtotal = transaction.items.reduce((total, item) => {
@@ -55,7 +57,7 @@ const transactionListReducer = createReducer(
     }, 0);
 
     return {
-      transactions: [ ...state.transactions ],
+      transactions: newTransactions,
       total
     }
   }),

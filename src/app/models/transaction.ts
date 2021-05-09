@@ -16,4 +16,5 @@ export interface Transaction {
   inventory_review_status?: string;
   price_review_status?: string;
   unsubmittedChange: boolean;
+  agent?: number;
 };

@@ -2,7 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
 import { Transaction } from 'src/app/models/transaction';
+import { UserInfo } from 'src/app/models/user-info';
 import { GeolocationWatcherService } from 'src/app/services/geolocation-watcher.service';
+import { UserInfoService } from 'src/app/services/user-info.service';
 import { CreateItemFormComponent } from '../create-item-form/create-item-form.component';
 
 @Component({
@@ -14,17 +16,20 @@ export class CreateTransactionComponent implements OnInit {
   customer: any;
   dateControl: FormControl = new FormControl();
   items: any = [];
+  userInfo: UserInfo;
 
 
   constructor(
     private modalController: ModalController,
-    private geolocationService: GeolocationWatcherService) { }
+    private geolocationService: GeolocationWatcherService,
+    private userInfoService: UserInfoService) { }
 
   ngOnInit(): void {
     const today = new Date();
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
     this.dateControl.setValue(`${tomorrow.getFullYear()}-${tomorrow.getMonth()+1}-${tomorrow.getDate()}`);
+    this.userInfo = this.userInfoService.get();
   }
 
   dismiss() {
@@ -115,7 +120,8 @@ export class CreateTransactionComponent implements OnInit {
       status: 'queue',
       unsubmittedChange: true,
       items: this.items,
-      created_date: new Date()
+      created_date: new Date(),
+      agent: this.userInfo.id
     };
 
     this.modalController.dismiss(transaction);

@@ -6,6 +6,7 @@ import { finalize } from 'rxjs/operators';
 import { AuthResult } from 'src/app/models/auth-result';
 import { AuthService } from 'src/app/services/auth.service';
 import { TokenService } from 'src/app/services/token.service';
+import { TransactionQueueService } from 'src/app/services/transaction-queue.service';
 import { UserInfoService } from 'src/app/services/user-info.service';
 import { ServerSettingsComponent } from './server-settings.component';
 
@@ -28,6 +29,7 @@ export class LoginFormComponent implements OnInit {
     private authService: AuthService,
     private tokenService: TokenService,
     private userInfoService: UserInfoService,
+    private transactionQueueService: TransactionQueueService,
     private nav: IonNav,
     private router: Router) { }
 
@@ -52,6 +54,7 @@ export class LoginFormComponent implements OnInit {
       this.tokenService.set(result.accessToken);
       console.log('Fetching user info.');
       await this.userInfoService.fetch();
+      await this.transactionQueueService.load();
       console.log('redirecting to main page');
       this.router.navigate([ '/main' ], { replaceUrl: true });
     }

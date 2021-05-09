@@ -21,7 +21,7 @@ export class AuthService {
     } else {
       try {
         const payload = this.decode(token);
-        return payload.exp > new Date().getTime();
+        return (payload.exp * 1000) > new Date().getTime();
       } catch(ex) {
         console.log(ex);
       }

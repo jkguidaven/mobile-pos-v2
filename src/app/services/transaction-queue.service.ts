@@ -3,10 +3,13 @@ import { Store } from '@ngrx/store';
 import Localbase from 'localbase';
 import { AppState } from '../models/app-state';
 import { Transaction } from '../models/transaction';
+import { UserInfo } from '../models/user-info';
 import * as actions from '../store/actions/transaction-queue.action';
 import { NativeHttpService } from './native-http.service';
 import { ServerSettingsService } from './server-settings.service';
+import { TokenService } from './token.service';
 import { UserInfoService } from './user-info.service';
+import * as moment from 'moment';
 
 @Injectable({
   providedIn: 'root'
@@ -17,10 +20,18 @@ export class TransactionQueueService {
   constructor(private store: Store<AppState>,
     private http: NativeHttpService,
     private serverSettings: ServerSettingsService,
-    private userInfoService: UserInfoService) {
+    private userInfoService: UserInfoService,
+    private tokenService: TokenService) {
     this.db = new Localbase('db');
     this.db.config.debug = false;
-    this.agentId = this.userInfoService.get().id;
+    this.agentId = this.userInfoService.get()?.id;
+    this.store.select('userInfo').subscribe((info: UserInfo) => {
+      if (info) {
+        this.agentId = info.id;
+      } else {
+        this.agentId = undefined;
+      }
+    });
   }
 
   async load() {
@@ -34,16 +45,20 @@ export class TransactionQueueService {
         now.getDate() === createdDate.getDate() &&
         now.getMonth() === createdDate.getMonth() &&
         now.getFullYear() === createdDate.getFullYear()) {
-        this.store.dispatch(actions.pushTransaction({
-          transaction: {
-            ...transaction.data,
-            localId: transaction.key
-          }
-        }));
-        } else {
-          console.log('delete transaction: ' + transaction.key);
-          this.db.collection('queue').doc(transaction.key).delete();
+
+        // Check if queued item is for current user. if not do not include to app state
+        if (transaction.data.agent === this.agentId) {
+          this.store.dispatch(actions.pushTransaction({
+            transaction: {
+              ...transaction.data,
+              localId: transaction.key
+            }
+          }));
         }
+      } else {
+        console.log('delete transaction: ' + transaction.key);
+        this.db.collection('queue').doc(transaction.key).delete();
+      }
     });
 
     this.eventLoop();
@@ -80,15 +95,47 @@ export class TransactionQueueService {
   async handleQueue(): Promise<void> {
     const queue = await this.checkCurrentTransaction();
 
-    if (queue) {
+    if (queue && this.tokenService.get()) {
       console.log('detected a pending task.. attempt to push it to the server');
       const { data, key }: { data: Transaction, key: string } = queue;
 
       try {
         if (data.status === 'queue') {
           const result = await this.submitTransactionToBackend(data);
-        } else {
+
+          if (result.id) {
+            this.db.collection('queue').doc(key).update({
+              id: result.id,
+              status: result.status,
+              unsubmittedChange: false
+            });
+
+            this.store.dispatch(actions.updateTransaction({
+              localId: key,
+              transaction: {
+                ...data,
+                id: result.id,
+                status: result.status,
+              }}));
+          }
+        } else if (data.unsubmittedChange) {
           const result = await this.updateTransactionFromBackend(data);
+
+          if (result.id) {
+            this.db.collection('queue').doc(key).update({
+              id: result.id,
+              status: result.status,
+              unsubmittedChange: false
+            });
+
+            this.store.dispatch(actions.updateTransaction({
+              localId: key,
+              transaction: {
+                ...data,
+                id: result.id,
+                status: result.status,
+              }}));
+          }
         }
       } catch (ex) {
         console.error(ex);
@@ -97,36 +144,63 @@ export class TransactionQueueService {
   }
 
   private async submitTransactionToBackend(transaction: Transaction) {
+    const latlongIsZero = transaction.geolocation.latitude === 0 &&
+      transaction.geolocation.latitude === 0;
+
     const result = await this.http.request({
       method: 'POST',
       url: this.getServerUrl(),
+      headers: {
+        'Content-Type': 'application/json'
+      },
       data: {
         customer: transaction.customer,
         customer_description: transaction.customer_description,
         geolocation: {
-          latitude: transaction.geolocation.latitude,
-          longitude: transaction.geolocation.longitude,
+          lat: latlongIsZero ? .1 : transaction.geolocation.latitude,
+          long: latlongIsZero ? .1 : transaction.geolocation.longitude,
         },
-        booking_date: transaction.booking_date,
-        items: transaction.items,
-        agent: this.agentId
+        booking_date: transaction.booking_date.getTime() / 1000,
+        items: transaction.items.map((item) => ({
+          item: item.id,
+          price: item.price,
+          quantity: item.quantity
+        })),
+        agent: transaction.agent
       }
     });
 
-    return result.data;
+    return result ? result.data : null;
   }
 
   private async updateTransactionFromBackend(transaction: Transaction) {
+    const latlongIsZero = transaction.geolocation.latitude === 0 &&
+      transaction.geolocation.latitude === 0;
+
     const result = await this.http.request({
       method: 'POST',
-      url: this.getServerUrl() + "/" + transaction.localId,
+      url: this.getServerUrl() + "/" + transaction.id,
+      headers: {
+        'Content-Type': 'application/json'
+      },
       data: {
-        booking_date: transaction.booking_date,
-        items: transaction.items
+        customer: transaction.customer,
+        customer_description: transaction.customer_description,
+        geolocation: {
+          lat: latlongIsZero ? .1 : transaction.geolocation.latitude,
+          long: latlongIsZero ? .1 : transaction.geolocation.longitude,
+        },
+        booking_date: transaction.booking_date.getTime() / 1000,
+        items: transaction.items.map((item) => ({
+          item: item.id,
+          price: item.price,
+          quantity: item.quantity
+        })),
+        agent: transaction.agent
       }
     });
 
-    return result.data;
+    return result ? result.data : null;
   }
 
   private getServerUrl() {
