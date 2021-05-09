@@ -12,13 +12,13 @@ const STORE_LAST_SYNC_KEY = 'last_db_sync';
   providedIn: 'root'
 })
 export class LookupTableService {
-  private db: Localbase = new Localbase('db');
+  private db: Localbase = new Localbase('lookup');
   private cache:any = {};
   constructor(
     private store: Store<AppState>,
     private serverSettings: ServerSettingsService,
     private nativeHttp: NativeHttpService) {
-    this.db.config.debug = false;
+    //this.db.config.debug = false;
   }
 
   async sync() {
@@ -54,6 +54,23 @@ export class LookupTableService {
     }
   }
 
+  getDB(): Promise<IDBDatabase> {
+    return new Promise((resolve) => {
+      const openDBRequest = indexedDB.open("lookup");
+      openDBRequest.onupgradeneeded = (event: any) => {
+        var db = event.target.result;
+        db.createObjectStore("customers", { autoIncrement: true });
+        db.createObjectStore("items", { autoIncrement: true });
+        db.createObjectStore("payment_methods", { autoIncrement: true });
+        db.createObjectStore("price_schemes", { autoIncrement: true });
+      }
+
+      openDBRequest.onsuccess = () => {
+        resolve(openDBRequest.result);
+      }
+    });
+  }
+
   async loadCache(table: string) {
     this.cache[table] = await this.db.collection(table).get()
   }
@@ -63,7 +80,12 @@ export class LookupTableService {
   }
 
   async syncTable(table: string, map: string, pullOnce: boolean = false) {
-    this.db.collection(table).delete();
+    const db = await this.getDB();
+
+    const transaction = db.transaction([table], 'readwrite');
+    const store = transaction.objectStore(table);
+    store.clear();
+
     this.cache[table] = [];
     this.updateSyncMessage(`Pulling ${table} information from server. please wait a moment.`);
     let page = 0;
@@ -89,10 +111,13 @@ export class LookupTableService {
       });
 
       if (result.status === 200) {
-        result.data[map].forEach(row => {
-          this.db.collection(table).add(row);
+        const transaction = db.transaction([table], 'readwrite');
+        const store = transaction.objectStore(table);
+        for (let row of result.data[map]) {
+          // await this.db.collection(table).add(row);
+          store.add(row);
           this.cache[table].push(row);
-        });
+        }
 
         if (page === result.data.last_page || result.data[map].length === 0 || pullOnce) {
           break;
