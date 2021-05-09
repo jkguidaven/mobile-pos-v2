@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Transaction } from 'src/app/models/transaction';
 
 @Component({
@@ -8,6 +8,7 @@ import { Transaction } from 'src/app/models/transaction';
 })
 export class TransactionListComponent implements OnInit {
   @Input() transactions: Transaction[];
+  @Output() select: EventEmitter<Transaction> = new EventEmitter<Transaction>();
 
   constructor() { }
 

@@ -10,6 +10,7 @@ export class ItemLineComponent implements OnInit {
   @Input() quantity: number;
   @Input() unit: string;
   @Input() price: number;
+  @Input() disabled: boolean;
 
   @Output() delete: EventEmitter<void> = new EventEmitter();
   @Output() update: EventEmitter<void> = new EventEmitter();

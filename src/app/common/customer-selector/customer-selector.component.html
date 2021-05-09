@@ -7,6 +7,7 @@
     itemValueField="id"
     itemTextField="name"
     [canSearch]="true"
+    [disabled]="disabled"
     (onSearch)="searchCustomer($event)"
     (onChange)="onChange($event)">
     <ng-template ionicSelectableCloseButtonTemplate>

@@ -38,6 +38,10 @@
   <app-no-db-sync-banner *ngIf="!(dbSync$ | async)?.lastSync; else main"></app-no-db-sync-banner>
 
   <ng-template #main>
-    <app-transaction-list [transactions]="(transactionQueue$ | async)?.transactions"></app-transaction-list>
+    <app-transaction-list
+      [transactions]="(transactionQueue$ | async)?.transactions"
+      (select)="onTransactionSelect($event)"
+    >
+    </app-transaction-list>
   </ng-template>
 </ion-content>

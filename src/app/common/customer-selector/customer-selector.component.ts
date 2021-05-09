@@ -13,6 +13,7 @@ export class CustomerSelectorComponent implements OnInit {
   @Input() model: any;
   @Output() modelChange: EventEmitter<any> = new EventEmitter();
   agentId: number;
+  @Input() disabled: boolean;
 
   subscription: Subscription;
 

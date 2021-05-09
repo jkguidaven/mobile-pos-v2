@@ -6,7 +6,7 @@
   </ion-buttons>
 
   <ion-title>
-    Add Transaction
+    {{ editMode ? 'Edit Transaction' : 'Add Transaction' }}
   </ion-title>
 </ion-toolbar>
 
@@ -15,11 +15,15 @@
   </div>
 
   <div class="header-container">
-    <app-customer-selector [(model)]="customer"></app-customer-selector>
+    <ion-text color="danger" class="edit-disabled-instruction" *ngIf="readonlyMode">
+      This transaction can no longer be edited.
+    </ion-text>
+
+    <app-customer-selector [(model)]="customer" [disabled]="editMode"></app-customer-selector>
 
     <ion-item lines="none" class="datepicker">
       <ion-label position="floating">Booking Date</ion-label>
-      <ion-datetime [formControl]="dateControl"></ion-datetime>
+      <ion-datetime [formControl]="dateControl" [disabled]="readonlyMode"></ion-datetime>
     </ion-item>
   </div>
 
@@ -31,16 +35,21 @@
       [unit]="item.unit"
       (delete)="deleteItemIndexByIndex(i)"
       (update)="updateItem(i)"
+      [disabled]="readonlyMode"
     >
     </app-item-line>
-    <app-add-item-line [disabled]="!hasCustomer" (add)="showCreateItemForm()"></app-add-item-line>
+    <app-add-item-line
+      [disabled]="!hasCustomer"
+      (add)="showCreateItemForm()"
+      *ngIf="!readonlyMode"
+    ></app-add-item-line>
   </div>
 
   <div class="amount-container">
     <ion-text>Total amount: <b>{{ totalAmount | currency:'PHP':'symbol-narrow' }}</b></ion-text>
   </div>
 
-  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="!readonlyMode">
     <ion-fab-button [disabled]="!canSubmit" (click)="save()">
       <ion-icon name="send"></ion-icon>
     </ion-fab-button>

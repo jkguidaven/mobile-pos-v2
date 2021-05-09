@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
 import { Transaction } from 'src/app/models/transaction';
@@ -13,9 +13,11 @@ import { CreateItemFormComponent } from '../create-item-form/create-item-form.co
   styleUrls: ['./create-transaction.component.scss']
 })
 export class CreateTransactionComponent implements OnInit {
-  customer: any;
-  dateControl: FormControl = new FormControl();
-  items: any = [];
+  @Input() customer: any;
+  @Input() dateControl: FormControl = new FormControl();
+  @Input() items: any = [];
+  @Input() editMode: boolean;
+  @Input() readonlyMode: boolean;
   userInfo: UserInfo;
 
 
@@ -25,10 +27,12 @@ export class CreateTransactionComponent implements OnInit {
     private userInfoService: UserInfoService) { }
 
   ngOnInit(): void {
-    const today = new Date();
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    this.dateControl.setValue(`${tomorrow.getFullYear()}-${tomorrow.getMonth()+1}-${tomorrow.getDate()}`);
+    if (!this.editMode) {
+      const today = new Date();
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      this.dateControl.setValue(`${tomorrow.getFullYear()}-${tomorrow.getMonth()+1}-${tomorrow.getDate()}`);
+    }
     this.userInfo = this.userInfoService.get();
   }
 
@@ -119,7 +123,7 @@ export class CreateTransactionComponent implements OnInit {
       geolocation,
       status: 'queue',
       unsubmittedChange: true,
-      items: this.items,
+      items: [ ...this.items ],
       created_date: new Date(),
       agent: this.userInfo.id
     };

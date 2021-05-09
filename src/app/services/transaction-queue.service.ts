@@ -80,6 +80,14 @@ export class TransactionQueueService {
     });
   }
 
+  async pushEditedTransaction(transaction: Transaction) {
+    this.db.collection('queue').doc(transaction.localId).update(transaction);
+    this.store.dispatch(actions.updateTransaction({
+      localId: transaction.localId,
+      transaction: transaction
+    }));
+  }
+
   async removeFromQueue(key: string) {
     this.db.collection('queue').doc(key).delete();
     this.store.dispatch(actions.removeTransaction({ localId: key }));
