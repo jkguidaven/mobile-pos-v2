@@ -54,7 +54,7 @@ export class LoginFormComponent implements OnInit {
       this.tokenService.set(result.accessToken);
       console.log('Fetching user info.');
       await this.userInfoService.fetch();
-      await this.transactionQueueService.load();
+      await this.transactionQueueService.load(true);
       console.log('redirecting to main page');
       this.router.navigate([ '/main' ], { replaceUrl: true });
     }

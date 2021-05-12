@@ -34,8 +34,13 @@ export class TransactionQueueService {
     });
   }
 
-  async load() {
+  async load(syncToServer: boolean = false) {
     this.store.dispatch(actions.clearTransaction());
+
+    if (syncToServer) {
+      await this.SyncLocalCacheToServer();
+    }
+
     const data = await this.db.collection('queue').get({ keys: true });
 
     data.forEach(transaction => {
@@ -62,6 +67,52 @@ export class TransactionQueueService {
     });
 
     this.eventLoop();
+  }
+
+  async SyncLocalCacheToServer() {
+    try {
+      console.log('Pulling transactions from server.');
+      const result = await this.http.request({
+        method: 'GET',
+        url: this.getServerUrl(),
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      });
+
+      if (result.status === 200) {
+        for (let transaction of result.data.transactions) {
+          const localTransaction = await this.getFromLocalById(transaction.id);
+
+          if (localTransaction) {
+            await this.db.collection('queue').doc(localTransaction.key)
+              .update({
+                ...localTransaction.data,
+                status: transaction.status
+              });
+          } else {
+            await this.db.collection('queue').add({
+              ...transaction,
+              booking_date: new Date(transaction.booking_date * 1000),
+              created_date: new Date(transaction.created_at * 1000),
+              unsubmittedChange: false,
+              agent: this.agentId
+            });
+          }
+        }
+      }
+    } catch (ex) {
+      console.error(ex);
+    }
+  }
+
+  private getFromLocalById(id: number) {
+    return this.db.collection('queue').get({ keys: true })
+      .then((results) => {
+        return results.find((transaction) => {
+          return transaction.data.id === id;
+        });
+      });
   }
 
   async addToQueue(transaction: Transaction) {

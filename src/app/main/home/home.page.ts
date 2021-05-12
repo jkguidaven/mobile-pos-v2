@@ -40,7 +40,7 @@ export class HomePage implements OnInit {
 
   async doRefresh(event) {
     try {
-      await this.transactionQueueService.load();
+      await this.transactionQueueService.load(true);
     } catch (ex) {
       console.error(ex);
     }
