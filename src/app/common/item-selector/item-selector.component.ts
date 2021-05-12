@@ -31,7 +31,7 @@ export class ItemSelectorComponent implements OnInit {
       this.subscription.unsubscribe();
     }
 
-    if (text.length < 3) {
+    if (text.length < 2) {
       event.component.items = [];
       event.component.endSearch();
       return;

@@ -45,9 +45,9 @@ const transactionListReducer = createReducer(
           ...transaction
         };
       } else {
-        return transaction;
+        return toUpdate;
       }
-    })
+    });
 
     const total = state.transactions.reduce((total, transaction) => {
       const subtotal = transaction.items.reduce((total, item) => {
