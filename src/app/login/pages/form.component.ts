@@ -16,14 +16,14 @@ import { ServerSettingsComponent } from './server-settings.component';
   styleUrls: ['./form.component.scss'],
 })
 export class LoginFormComponent implements OnInit {
-  private errorMessage: string;
-
   processing: boolean;
 
   form: FormGroup = new FormGroup({
     username: new FormControl('', [ Validators.required ]),
     password: new FormControl('', [ Validators.required ])
   });
+
+  private errorMessage: string;
 
   constructor(
     private authService: AuthService,

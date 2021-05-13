@@ -12,7 +12,7 @@ import { UserInfoService } from './user-info.service';
 import { LookupTableService } from './lookup-table.service';
 import { Plugins } from '@capacitor/core';
 
-const { Network } = Plugins;
+const { Network: network } = Plugins;
 
 @Injectable({
   providedIn: 'root'
@@ -44,7 +44,7 @@ export class TransactionQueueService {
       this.store.dispatch(actions.updateFetching({ fetching: true }));
 
       if (syncToServer) {
-        await this.SyncLocalCacheToServer();
+        await this.syncLocalCacheToServer();
       }
 
       const data = await this.db.collection('queue').get({ keys: true });
@@ -78,13 +78,14 @@ export class TransactionQueueService {
     }
   }
 
-  async SyncLocalCacheToServer() {
+  async syncLocalCacheToServer() {
     try {
       console.log('Pulling transactions from server.');
       const result = await this.http.request({
         method: 'GET',
         url: this.getServerUrl(),
         headers: {
+          // eslint-disable-next-line
           'Content-Type': 'application/json'
         },
       });
@@ -123,11 +124,6 @@ export class TransactionQueueService {
     }
   }
 
-  private getFromLocalById(id: number) {
-    return this.db.collection('queue').get({ keys: true })
-      .then((results) => results.find((transaction) => transaction.data.id === id));
-  }
-
   async addToQueue(transaction: Transaction) {
     const result = await this.db.collection('queue').add(transaction);
     this.store.dispatch(actions.pushTransaction({
@@ -139,7 +135,8 @@ export class TransactionQueueService {
   }
 
   checkCurrentTransaction(): Promise<any> {
-    return this.db.collection('queue').get({ keys: true }).then((queue) => queue.find(({ data }: { data: Transaction }) => data.unsubmittedChange));
+    return this.db.collection('queue').get({ keys: true })
+      .then((queue) => queue.find(({ data }: { data: Transaction }) => data.unsubmittedChange));
   }
 
   async pushEditedTransaction(transaction: Transaction) {
@@ -168,7 +165,7 @@ export class TransactionQueueService {
   }
 
   async handleQueue(): Promise<void> {
-    const networkStatus = await Network.getStatus();
+    const networkStatus = await network.getStatus();
 
     if (networkStatus.connected) {
 
@@ -231,6 +228,7 @@ export class TransactionQueueService {
       method: 'POST',
       url: this.getServerUrl(),
       headers: {
+        // eslint-disable-next-line
         'Content-Type': 'application/json'
       },
       data: {
@@ -261,6 +259,7 @@ export class TransactionQueueService {
       method: 'POST',
       url: this.getServerUrl() + '/' + transaction.id,
       headers: {
+        // eslint-disable-next-line
         'Content-Type': 'application/json'
       },
       data: {
@@ -285,5 +284,10 @@ export class TransactionQueueService {
 
   private getServerUrl() {
     return `${this.serverSettings.get().serverUrl}/api/transactions`;
+  }
+
+  private getFromLocalById(id: number) {
+    return this.db.collection('queue').get({ keys: true })
+      .then((results) => results.find((transaction) => transaction.data.id === id));
   }
 }

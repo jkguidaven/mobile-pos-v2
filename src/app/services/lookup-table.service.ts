@@ -82,9 +82,9 @@ export class LookupTableService {
   async syncTable(table: string, map: string, pullOnce: boolean = false) {
     const db = await this.getDB();
 
-    const transaction = db.transaction([table], 'readwrite');
-    const store = transaction.objectStore(table);
-    store.clear();
+    const clearTransaction = db.transaction([table], 'readwrite');
+    const clearStore = clearTransaction.objectStore(table);
+    clearStore.clear();
 
     this.cache[table] = [];
     this.updateSyncMessage(`Pulling ${table} information from server. please wait a moment.`);
@@ -125,6 +125,7 @@ export class LookupTableService {
           page++;
         }
       } else {
+        // eslint-disable-next-line
         throw { message: 'Server error pulling info' };
       }
     }

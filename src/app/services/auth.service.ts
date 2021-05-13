@@ -33,8 +33,8 @@ export class AuthService {
   async authenticate(username: string, password: string): Promise<AuthResult> {
     try {
       const location = await this.geolocationWatcher.getCurrent();
-      const { Http } = Plugins;
-      const result: any = await Http.request({
+      const { Http: http } = Plugins;
+      const result: any = await http.request({
         method: 'POST',
         url: `${this.serverUrl}/api/user/token`,
         data: {
@@ -44,6 +44,7 @@ export class AuthService {
           geolong: location.longitude
         },
         headers: {
+          // eslint-disable-next-line
           'Content-Type': 'application/json'
         }
       });

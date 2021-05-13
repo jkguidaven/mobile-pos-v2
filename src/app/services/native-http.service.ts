@@ -14,12 +14,13 @@ export class NativeHttpService {
   constructor(private tokenService: TokenService, private router: Router) { }
 
   request(opt: HttpOptions): Promise<HttpResponse> {
-    const { Http } = Plugins;
+    const { Http: http } = Plugins;
 
-    return Http.request({
+    return http.request({
       ...opt,
       headers: {
         ...(opt.headers || {}),
+        // eslint-disable-next-line
         Authorization: `Bearer ${this.tokenService.get()}`
       }
     }).then((result) => {

@@ -11,7 +11,7 @@ const SAMPLE_DUMMY_SIZE = 3;
 export class TransactionListComponent implements OnInit {
   @Input() transactions: Transaction[];
   @Input() fetching: boolean;
-  @Output() select: EventEmitter<Transaction> = new EventEmitter<Transaction>();
+  @Output() selectTransaction: EventEmitter<Transaction> = new EventEmitter<Transaction>();
 
   dummyList: any = [];
 

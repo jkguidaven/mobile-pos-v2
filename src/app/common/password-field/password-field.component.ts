@@ -1,7 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ControlContainer, FormControl, FormGroupDirective } from '@angular/forms';
+import { ControlContainer, FormGroupDirective } from '@angular/forms';
 
 @Component({
+  // eslint-disable-next-line
   selector: 'ion-password',
   templateUrl: './password-field.component.html',
   styleUrls: ['./password-field.component.scss'],

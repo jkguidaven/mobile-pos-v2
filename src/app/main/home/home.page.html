@@ -47,7 +47,7 @@
     <app-transaction-list
       [transactions]="(transactionQueue$ | async)?.transactions"
       [fetching]="(transactionQueue$ | async)?.fetching"
-      (select)="onTransactionSelect($event)"
+      (selectTransaction)="onTransactionSelect($event)"
     >
     </app-transaction-list>
   </ng-template>
