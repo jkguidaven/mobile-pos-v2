@@ -5,7 +5,7 @@ import { ModalController } from '@ionic/angular';
 @Component({
   selector: 'app-create-item-form',
   templateUrl: './create-item-form.component.html',
-  styleUrls: ['./create-item-form.component.css']
+  styleUrls: ['./create-item-form.component.scss']
 })
 export class CreateItemFormComponent implements OnInit {
   @Input() pricescheme: any;
@@ -43,5 +43,13 @@ export class CreateItemFormComponent implements OnInit {
       price: this.priceControl.value,
       quantity: this.quantityControl.value
     }, '', 'create-item-form');
+  }
+
+  incrementQuantity() {
+    this.quantityControl.setValue(this.quantityControl.value + 1);
+  }
+
+  decrementQuantity() {
+    this.quantityControl.setValue(this.quantityControl.value - 1);
   }
 }

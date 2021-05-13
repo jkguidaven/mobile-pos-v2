@@ -9,7 +9,10 @@ import { NativeHttpService } from './native-http.service';
 import { ServerSettingsService } from './server-settings.service';
 import { TokenService } from './token.service';
 import { UserInfoService } from './user-info.service';
-import * as moment from 'moment';
+import { LookupTableService } from './lookup-table.service';
+import { Plugins } from '@capacitor/core';
+
+const { Network } = Plugins;
 
 @Injectable({
   providedIn: 'root'
@@ -21,6 +24,7 @@ export class TransactionQueueService {
     private http: NativeHttpService,
     private serverSettings: ServerSettingsService,
     private userInfoService: UserInfoService,
+    private lookupTable: LookupTableService,
     private tokenService: TokenService) {
     this.db = new Localbase('db');
     this.db.config.debug = false;
@@ -65,8 +69,6 @@ export class TransactionQueueService {
         this.db.collection('queue').doc(transaction.key).delete();
       }
     });
-
-    this.eventLoop();
   }
 
   async SyncLocalCacheToServer() {
@@ -96,7 +98,15 @@ export class TransactionQueueService {
               booking_date: new Date(transaction.booking_date * 1000),
               created_date: new Date(transaction.created_at * 1000),
               unsubmittedChange: false,
-              agent: this.agentId
+              agent: this.agentId,
+              items: transaction.items.map((item) => {
+                const cacheInfo = this.lookupTable.searchDataFromCache('items',
+                  (cacheItem) => cacheItem.id === item.item);
+                return {
+                  ...cacheInfo[0],
+                  ...item
+                };
+              })
             });
           }
         }
@@ -145,59 +155,69 @@ export class TransactionQueueService {
   }
 
   async eventLoop() {
+    try {
     await this.handleQueue();
+    } catch (ex) {
+      console.error(ex);
+    }
+
     setTimeout(() => {
       this.eventLoop();
-    }, 1000);
+    }, 5000);
   }
 
   async handleQueue(): Promise<void> {
-    const queue = await this.checkCurrentTransaction();
+    const networkStatus = await Network.getStatus();
 
-    if (queue && this.tokenService.get()) {
-      console.log('detected a pending task.. attempt to push it to the server');
-      const { data, key }: { data: Transaction, key: string } = queue;
+    if (networkStatus.connected) {
 
-      try {
-        if (data.status === 'queue') {
-          const result = await this.submitTransactionToBackend(data);
+      const queue = await this.checkCurrentTransaction();
 
-          if (result.id) {
-            this.db.collection('queue').doc(key).update({
-              id: result.id,
-              status: result.status,
-              unsubmittedChange: false
-            });
+      if (queue && this.tokenService.get()) {
+        console.log('detected a pending task.. attempt to push it to the server');
+        const { data, key }: { data: Transaction, key: string } = queue;
 
-            this.store.dispatch(actions.updateTransaction({
-              localId: key,
-              transaction: {
-                ...data,
+        try {
+          if (data.status === 'queue') {
+            const result = await this.submitTransactionToBackend(data);
+
+            if (result.id) {
+              this.db.collection('queue').doc(key).update({
                 id: result.id,
                 status: result.status,
-              }}));
-          }
-        } else if (data.unsubmittedChange) {
-          const result = await this.updateTransactionFromBackend(data);
+                unsubmittedChange: false
+              });
 
-          if (result.id) {
-            this.db.collection('queue').doc(key).update({
-              id: result.id,
-              status: result.status,
-              unsubmittedChange: false
-            });
+              this.store.dispatch(actions.updateTransaction({
+                localId: key,
+                transaction: {
+                  ...data,
+                  id: result.id,
+                  status: result.status,
+                }}));
+            }
+          } else if (data.unsubmittedChange) {
+            const result = await this.updateTransactionFromBackend(data);
 
-            this.store.dispatch(actions.updateTransaction({
-              localId: key,
-              transaction: {
-                ...data,
+            if (result.id) {
+              this.db.collection('queue').doc(key).update({
                 id: result.id,
                 status: result.status,
-              }}));
+                unsubmittedChange: false
+              });
+
+              this.store.dispatch(actions.updateTransaction({
+                localId: key,
+                transaction: {
+                  ...data,
+                  id: result.id,
+                  status: result.status,
+                }}));
+            }
           }
+        } catch (ex) {
+          console.error(ex);
         }
-      } catch (ex) {
-        console.error(ex);
       }
     }
   }

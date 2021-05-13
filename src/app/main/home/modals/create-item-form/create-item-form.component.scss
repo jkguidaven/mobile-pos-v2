@@ -1,0 +1,22 @@
+ion-button {
+  --background: #2ecc71;
+  margin: 16px 0;
+}
+
+.quantity-input-box {
+  display: flex;
+  align-content: center;
+
+  ion-icon {
+    font-size: 32px;
+    margin: 20px 10px -15px;
+  }
+
+  .add-button {
+    color: green;
+  }
+
+  .remove-button {
+    color: red
+  }
+}

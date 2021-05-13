@@ -18,8 +18,9 @@ export class AppComponent implements OnInit {
     this.geolocationWatcher.watch();
     this.lookuptableService.load();
 
-    setTimeout(() => {
-      this.transactionQueue.load();
+    setTimeout(async () => {
+      await this.transactionQueue.load();
+      this.transactionQueue.eventLoop();
     }, 1000);
   }
 }

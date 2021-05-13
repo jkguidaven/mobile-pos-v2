@@ -71,6 +71,7 @@ export class CreateTransactionComponent implements OnInit {
     const { data } = await modal.onWillDismiss();
     if (data) {
       this.items.push(data);
+      this.showCreateItemForm();
     }
   }
 

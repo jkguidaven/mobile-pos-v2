@@ -18,7 +18,7 @@ export class LookupTableService {
     private store: Store<AppState>,
     private serverSettings: ServerSettingsService,
     private nativeHttp: NativeHttpService) {
-    //this.db.config.debug = false;
+    this.db.config.debug = false;
   }
 
   async sync() {
