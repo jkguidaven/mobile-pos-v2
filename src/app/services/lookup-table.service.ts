@@ -13,7 +13,7 @@ const STORE_LAST_SYNC_KEY = 'last_db_sync';
 })
 export class LookupTableService {
   private db: Localbase = new Localbase('lookup');
-  private cache:any = {};
+  private cache: any = {};
   constructor(
     private store: Store<AppState>,
     private serverSettings: ServerSettingsService,
@@ -56,23 +56,23 @@ export class LookupTableService {
 
   getDB(): Promise<IDBDatabase> {
     return new Promise((resolve) => {
-      const openDBRequest = indexedDB.open("lookup");
+      const openDBRequest = indexedDB.open('lookup');
       openDBRequest.onupgradeneeded = (event: any) => {
-        var db = event.target.result;
-        db.createObjectStore("customers", { autoIncrement: true });
-        db.createObjectStore("items", { autoIncrement: true });
-        db.createObjectStore("payment_methods", { autoIncrement: true });
-        db.createObjectStore("price_schemes", { autoIncrement: true });
-      }
+        const db = event.target.result;
+        db.createObjectStore('customers', { autoIncrement: true });
+        db.createObjectStore('items', { autoIncrement: true });
+        db.createObjectStore('payment_methods', { autoIncrement: true });
+        db.createObjectStore('price_schemes', { autoIncrement: true });
+      };
 
       openDBRequest.onsuccess = () => {
         resolve(openDBRequest.result);
-      }
+      };
     });
   }
 
   async loadCache(table: string) {
-    this.cache[table] = await this.db.collection(table).get()
+    this.cache[table] = await this.db.collection(table).get();
   }
 
   searchDataFromCache(name: string, filter: (obj: any) => boolean) {
@@ -89,7 +89,7 @@ export class LookupTableService {
     this.cache[table] = [];
     this.updateSyncMessage(`Pulling ${table} information from server. please wait a moment.`);
     let page = 0;
-    let length = 300;
+    const length = 300;
 
     while(true) {
       const result = await this.nativeHttp.request({
@@ -113,7 +113,7 @@ export class LookupTableService {
       if (result.status === 200) {
         const transaction = db.transaction([table], 'readwrite');
         const store = transaction.objectStore(table);
-        for (let row of result.data[map]) {
+        for (const row of result.data[map]) {
           // await this.db.collection(table).add(row);
           store.add(row);
           this.cache[table].push(row);

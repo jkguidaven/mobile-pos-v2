@@ -18,7 +18,7 @@ import { map } from 'rxjs/operators';
   styleUrls: ['./setting.page.scss'],
 })
 export class SettingPage implements OnInit {
-  username: string = "James kenneth A. guidaven";
+  username = 'James kenneth A. guidaven';
   userInfo$: Observable<UserInfo>;
 
   constructor(
@@ -79,9 +79,7 @@ export class SettingPage implements OnInit {
   }
 
   get fullName(): Observable<string> {
-    return this.userInfo$.pipe(map(({ firstname, middlename, lastname }) => {
-      return this.mergeName(firstname, middlename, lastname);
-    }));
+    return this.userInfo$.pipe(map(({ firstname, middlename, lastname }) => this.mergeName(firstname, middlename, lastname)));
   }
 
   mergeName(firstname, middlename, lastname): string {

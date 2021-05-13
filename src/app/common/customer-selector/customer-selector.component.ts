@@ -11,9 +11,9 @@ import { UserInfoService } from 'src/app/services/user-info.service';
 })
 export class CustomerSelectorComponent implements OnInit {
   @Input() model: any;
+  @Input() disabled: boolean;
   @Output() modelChange: EventEmitter<any> = new EventEmitter();
   agentId: number;
-  @Input() disabled: boolean;
 
   subscription: Subscription;
 
@@ -24,10 +24,10 @@ export class CustomerSelectorComponent implements OnInit {
   }
 
   searchCustomer(event: {
-    component: IonicSelectableComponent,
-    text: string
+    component: IonicSelectableComponent;
+    text: string;
   }) {
-    let text = event.text.trim().toLowerCase();
+    const text = event.text.trim().toLowerCase();
     event.component.startSearch();
 
     if (this.subscription) {

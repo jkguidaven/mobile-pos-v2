@@ -103,9 +103,7 @@ export class CreateTransactionComponent implements OnInit {
   }
 
   get totalAmount() {
-    return this.items.reduce((total, item) => {
-      return total + (item.price * item.quantity);
-    }, 0);
+    return this.items.reduce((total, item) => total + (item.price * item.quantity), 0);
   }
 
   async save() {

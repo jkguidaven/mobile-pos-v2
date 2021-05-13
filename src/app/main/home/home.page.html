@@ -17,7 +17,7 @@
   </ion-refresher>
 
   <ion-card class="sales-container" mode="ios">
-    <ion-card-content>
+    <ion-card-content *ngIf="!(transactionQueue$ | async)?.fetching; else dummySale">
         <ion-text class="label">CURRENT SALES</ion-text>
         <div class="ion-text-end">
           <ion-text class="currency-symbol">₱</ion-text>
@@ -33,6 +33,12 @@
           <ion-text class="currency">PHP</ion-text>
         </div>
     </ion-card-content>
+
+    <ng-template #dummySale>
+      <ion-card-content>
+        <ion-spinner name="crescent" color="primary"></ion-spinner>
+      </ion-card-content>
+    </ng-template>
   </ion-card>
 
   <app-no-db-sync-banner *ngIf="!(dbSync$ | async)?.lastSync; else main"></app-no-db-sync-banner>
@@ -40,6 +46,7 @@
   <ng-template #main>
     <app-transaction-list
       [transactions]="(transactionQueue$ | async)?.transactions"
+      [fetching]="(transactionQueue$ | async)?.fetching"
       (select)="onTransactionSelect($event)"
     >
     </app-transaction-list>

@@ -13,7 +13,7 @@ import { ControlContainer, FormControl, FormGroupDirective } from '@angular/form
   ]
 })
 export class PasswordFieldComponent implements OnInit {
-  @Input() label: string = "Password";
+  @Input() label = 'Password';
   @Input() controlName: string;
   @Input() color: string;
 

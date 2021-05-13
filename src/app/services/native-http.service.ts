@@ -20,7 +20,7 @@ export class NativeHttpService {
       ...opt,
       headers: {
         ...(opt.headers || {}),
-        'Authorization': `Bearer ${this.tokenService.get()}`
+        Authorization: `Bearer ${this.tokenService.get()}`
       }
     }).then((result) => {
       if (result.status === 401) {
@@ -30,6 +30,6 @@ export class NativeHttpService {
       }
 
       return result;
-    })
+    });
   }
 }

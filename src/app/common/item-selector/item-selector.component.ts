@@ -21,10 +21,10 @@ export class ItemSelectorComponent implements OnInit {
   }
 
   searchItems(event: {
-    component: IonicSelectableComponent,
-    text: string
+    component: IonicSelectableComponent;
+    text: string;
   }) {
-    let text = event.text.trim().toLowerCase();
+    const text = event.text.trim().toLowerCase();
     event.component.startSearch();
 
     if (this.subscription) {

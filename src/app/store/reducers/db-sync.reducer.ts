@@ -1,5 +1,5 @@
-import { Action, createReducer, on } from "@ngrx/store";
-import { DBSyncState } from "src/app/models/db-sync";
+import { Action, createReducer, on } from '@ngrx/store';
+import { DBSyncState } from 'src/app/models/db-sync';
 import * as actions from '../actions/db-sync.action';
 
 export const initialState: DBSyncState = {
@@ -24,6 +24,4 @@ const dbSyncReducer = createReducer(
   }))
 );
 
-export default function (state: DBSyncState | undefined, action: Action) {
-  return dbSyncReducer(state, action);
-};
+export default (state: DBSyncState | undefined, action: Action) => dbSyncReducer(state, action);

@@ -39,36 +39,43 @@ export class TransactionQueueService {
   }
 
   async load(syncToServer: boolean = false) {
-    this.store.dispatch(actions.clearTransaction());
+    try {
+      this.store.dispatch(actions.clearTransaction());
+      this.store.dispatch(actions.updateFetching({ fetching: true }));
 
-    if (syncToServer) {
-      await this.SyncLocalCacheToServer();
-    }
-
-    const data = await this.db.collection('queue').get({ keys: true });
-
-    data.forEach(transaction => {
-      const createdDate = transaction.data.created_date;
-      const now = new Date();
-      if (createdDate &&
-        now.getDate() === createdDate.getDate() &&
-        now.getMonth() === createdDate.getMonth() &&
-        now.getFullYear() === createdDate.getFullYear()) {
-
-        // Check if queued item is for current user. if not do not include to app state
-        if (transaction.data.agent === this.agentId) {
-          this.store.dispatch(actions.pushTransaction({
-            transaction: {
-              ...transaction.data,
-              localId: transaction.key
-            }
-          }));
-        }
-      } else {
-        console.log('delete transaction: ' + transaction.key);
-        this.db.collection('queue').doc(transaction.key).delete();
+      if (syncToServer) {
+        await this.SyncLocalCacheToServer();
       }
-    });
+
+      const data = await this.db.collection('queue').get({ keys: true });
+
+      data.forEach(transaction => {
+        const createdDate = transaction.data.created_date;
+        const now = new Date();
+        if (createdDate &&
+          now.getDate() === createdDate.getDate() &&
+          now.getMonth() === createdDate.getMonth() &&
+          now.getFullYear() === createdDate.getFullYear()) {
+
+          // Check if queued item is for current user. if not do not include to app state
+          if (transaction.data.agent === this.agentId) {
+            this.store.dispatch(actions.pushTransaction({
+              transaction: {
+                ...transaction.data,
+                localId: transaction.key
+              }
+            }));
+          }
+        } else {
+          console.log('delete transaction: ' + transaction.key);
+          this.db.collection('queue').doc(transaction.key).delete();
+        }
+      });
+    } catch(ex) {
+      console.error(ex);
+    } finally {
+      this.store.dispatch(actions.updateFetching({ fetching: false }));
+    }
   }
 
   async SyncLocalCacheToServer() {
@@ -83,7 +90,7 @@ export class TransactionQueueService {
       });
 
       if (result.status === 200) {
-        for (let transaction of result.data.transactions) {
+        for (const transaction of result.data.transactions) {
           const localTransaction = await this.getFromLocalById(transaction.id);
 
           if (localTransaction) {
@@ -118,11 +125,7 @@ export class TransactionQueueService {
 
   private getFromLocalById(id: number) {
     return this.db.collection('queue').get({ keys: true })
-      .then((results) => {
-        return results.find((transaction) => {
-          return transaction.data.id === id;
-        });
-      });
+      .then((results) => results.find((transaction) => transaction.data.id === id));
   }
 
   async addToQueue(transaction: Transaction) {
@@ -136,16 +139,14 @@ export class TransactionQueueService {
   }
 
   checkCurrentTransaction(): Promise<any> {
-    return this.db.collection('queue').get({ keys: true }).then((queue) => {
-      return queue.find(({ data }: { data: Transaction }) => data.unsubmittedChange);
-    });
+    return this.db.collection('queue').get({ keys: true }).then((queue) => queue.find(({ data }: { data: Transaction }) => data.unsubmittedChange));
   }
 
   async pushEditedTransaction(transaction: Transaction) {
     this.db.collection('queue').doc(transaction.localId).update(transaction);
     this.store.dispatch(actions.updateTransaction({
       localId: transaction.localId,
-      transaction: transaction
+      transaction
     }));
   }
 
@@ -175,7 +176,7 @@ export class TransactionQueueService {
 
       if (queue && this.tokenService.get()) {
         console.log('detected a pending task.. attempt to push it to the server');
-        const { data, key }: { data: Transaction, key: string } = queue;
+        const { data, key }: { data: Transaction; key: string } = queue;
 
         try {
           if (data.status === 'queue') {
@@ -258,7 +259,7 @@ export class TransactionQueueService {
 
     const result = await this.http.request({
       method: 'POST',
-      url: this.getServerUrl() + "/" + transaction.id,
+      url: this.getServerUrl() + '/' + transaction.id,
       headers: {
         'Content-Type': 'application/json'
       },

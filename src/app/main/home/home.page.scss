@@ -42,4 +42,10 @@ ion-title {
       color: rgb(116, 116, 116);
     }
   }
+
+  ion-spinner {
+    display: block;
+    margin: 0 auto;
+    left: -50px;
+  }
 }

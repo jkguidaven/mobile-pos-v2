@@ -41,8 +41,8 @@ export class LoginFormComponent implements OnInit {
   }
 
   async authenticate() {
-    const username = this.form.controls['username'].value;
-    const password = this.form.controls['password'].value;
+    const username = this.form.controls.username.value;
+    const password = this.form.controls.password.value;
     this.processing = true;
     this.errorMessage = null;
 

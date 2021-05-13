@@ -1,8 +1,8 @@
 
 
-import { Action, createReducer, on } from "@ngrx/store";
-import { LocationCoordinates } from "src/app/models/location-coordinates";
-import { UserInfo } from "src/app/models/user-info";
+import { Action, createReducer, on } from '@ngrx/store';
+import { LocationCoordinates } from 'src/app/models/location-coordinates';
+import { UserInfo } from 'src/app/models/user-info';
 import * as actions from '../actions/location.action';
 
 export const initialState: LocationCoordinates = {
@@ -18,6 +18,4 @@ const locationReducer = createReducer(
   }))
 );
 
-export default function (state: LocationCoordinates | undefined, action: Action) {
-  return locationReducer(state, action);
-};
+export default (state: LocationCoordinates | undefined, action: Action) => locationReducer(state, action);

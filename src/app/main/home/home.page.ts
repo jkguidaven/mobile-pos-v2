@@ -18,7 +18,7 @@ import { FormControl } from '@angular/forms';
   styleUrls: ['./home.page.scss'],
 })
 export class HomePage implements OnInit {
-  dailySales: number = 13105.60;
+  dailySales = 13105.60;
   counto: number;
   userInfo$: Observable<UserInfo>;
   dbSync$: Observable<DBSyncState>;

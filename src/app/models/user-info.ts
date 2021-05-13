@@ -13,5 +13,5 @@ export interface UserInfo {
     mobile?: string;
     phone?: string;
     email?: string;
-  }
+  };
 };

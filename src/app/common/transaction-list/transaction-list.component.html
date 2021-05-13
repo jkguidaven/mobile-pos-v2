@@ -1,20 +1,37 @@
 <div class="container">
   <ion-title>Transaction List</ion-title>
 
-  <ion-list lines="none">
-    <ion-item button *ngFor="let transaction of transactions" (click)="select.emit(transaction)">
-      <ion-label class="main-description">
-        <div>
-          <h2>{{ transaction.customer_description }}</h2>
-          <p>Booking Date: <span style.color="lightgrey">{{ transaction.booking_date }}</span></p>
-          <p>Current status: <span [style.color]="getStatusColor(transaction)">{{ transaction.status }}</span></p>
-        </div>
-
-        <h4>
-          {{  getTotal(transaction) | currency:'PHP':'symbol-narrow' }}
-        </h4>
+  <ion-list lines="none" *ngIf="fetching; else realList">
+    <ion-item *ngFor="let dummy of dummyList">
+      <ion-label class="dummy-description">
+        <ion-skeleton-text animated [style.width]="dummy.first"></ion-skeleton-text>
+        <ion-skeleton-text animated [style.width]="dummy.second"></ion-skeleton-text>
+        <ion-skeleton-text animated [style.width]="dummy.third"></ion-skeleton-text>
       </ion-label>
     </ion-item>
   </ion-list>
 
+  <ng-template #realList>
+    <ion-list lines="none" *ngIf="transactions.length > 0; else noTransaction">
+      <ion-item button *ngFor="let transaction of transactions" (click)="select.emit(transaction)">
+        <ion-label class="main-description">
+          <div>
+            <h2>{{ transaction.customer_description }}</h2>
+            <p>Booking Date: <span style.color="lightgrey">{{ transaction.booking_date }}</span></p>
+            <p>Current status: <span [style.color]="getStatusColor(transaction)">{{ transaction.status }}</span></p>
+          </div>
+
+          <h4>
+            {{  getTotal(transaction) | currency:'PHP':'symbol-narrow' }}
+          </h4>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+
+    <ng-template #noTransaction>
+      <ion-list lines="none" class="ion-text-center">
+        <ion-text color="medium">No Transaction was added.</ion-text>
+      </ion-list>
+    </ng-template>
+  </ng-template>
 </div>
