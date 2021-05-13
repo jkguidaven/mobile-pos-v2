@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { AlertController, ModalController } from '@ionic/angular';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { AppState } from 'src/app/models/app-state';
@@ -27,7 +27,8 @@ export class HomePage implements OnInit {
   constructor(
     public store: Store<AppState>,
     private transactionQueueService: TransactionQueueService,
-    private modalController: ModalController)
+    private modalController: ModalController,
+    private alertController: AlertController)
   {
     this.userInfo$ = store.select('userInfo');
     this.dbSync$ = store.select('dbSync');
@@ -74,5 +75,27 @@ export class HomePage implements OnInit {
         unsubmittedChange: true
       });
     }
+  }
+
+  async finalize() {
+    const alert = await this.alertController.create({
+      header: 'Finalize Transaction',
+      message: 'Are you sure you want to finalize the transactions? \n '
+        + 'Doing so will disable creation of new transaction for the day.',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'cancel-button-alert'
+        },
+        {
+          text: 'Finalize Transactions',
+          role: 'finalize',
+          cssClass: 'primary'
+        }
+      ]
+    });
+
+    alert.present();
   }
 }

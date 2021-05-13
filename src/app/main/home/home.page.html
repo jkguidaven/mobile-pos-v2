@@ -50,5 +50,15 @@
       (selectTransaction)="onTransactionSelect($event)"
     >
     </app-transaction-list>
+
+    <ion-button
+      class="ion-padding finalize-button"
+      expand="block"
+      (click)="finalize()"
+      [disabled]="(transactionQueue$ | async).transactions.length === 0"
+      mode="ios"
+    >
+      FINALIZE TRANSACTIONS
+    </ion-button>
   </ng-template>
 </ion-content>
