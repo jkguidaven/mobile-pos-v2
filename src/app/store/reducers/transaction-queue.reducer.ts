@@ -3,6 +3,7 @@ import { TransactionList } from 'src/app/models/transaction-list';
 import * as actions from '../actions/transaction-queue.action';
 
 export const initialState: TransactionList = {
+  lastFinalization: null,
   fetching: false,
   total: 0,
   transactions: []
@@ -13,6 +14,7 @@ const transactionListReducer = createReducer(
   on(actions.pushTransaction, (state, { transaction }) => {
     const subtotal = transaction.items.reduce((total, item) => total + (item.price * item.quantity), 0);
     return {
+      lastFinalization: state.lastFinalization,
       total: state.total + subtotal,
       fetching: state.fetching,
       transactions: [
@@ -30,6 +32,7 @@ const transactionListReducer = createReducer(
     }, 0);
 
     return {
+      lastFinalization: state.lastFinalization,
       transactions,
       fetching: state.fetching,
       total
@@ -54,6 +57,7 @@ const transactionListReducer = createReducer(
     }, 0);
 
     return {
+      lastFinalization: state.lastFinalization,
       fetching: state.fetching,
       transactions: newTransactions,
       total
@@ -61,6 +65,7 @@ const transactionListReducer = createReducer(
   }),
 
   on(actions.clearTransaction, () => ({
+    lastFinalization: null,
     fetching: false,
     total: 0,
     transactions: []
@@ -69,6 +74,11 @@ const transactionListReducer = createReducer(
   on(actions.updateFetching, (state, { fetching }) => ({
     ...state,
     fetching
+  })),
+
+  on(actions.setLastFinalization, (state, { lastFinalization }) => ({
+    ...state,
+    lastFinalization
   }))
 );
 

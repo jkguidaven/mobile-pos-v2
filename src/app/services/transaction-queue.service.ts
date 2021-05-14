@@ -11,8 +11,11 @@ import { TokenService } from './token.service';
 import { UserInfoService } from './user-info.service';
 import { LookupTableService } from './lookup-table.service';
 import { Plugins } from '@capacitor/core';
+import { GeolocationWatcherService } from './geolocation-watcher.service';
 
 const { Network: network } = Plugins;
+
+const LOCAL_STORAGE_LAST_FINALIZATION_KEY = 'LAST_FINALIZATION';
 
 @Injectable({
   providedIn: 'root'
@@ -25,7 +28,8 @@ export class TransactionQueueService {
     private serverSettings: ServerSettingsService,
     private userInfoService: UserInfoService,
     private lookupTable: LookupTableService,
-    private tokenService: TokenService) {
+    private tokenService: TokenService,
+    private locationService: GeolocationWatcherService) {
     this.db = new Localbase('db');
     this.db.config.debug = false;
     this.agentId = this.userInfoService.get()?.id;
@@ -45,6 +49,14 @@ export class TransactionQueueService {
 
       if (syncToServer) {
         await this.syncLocalCacheToServer();
+      }
+
+      const lastFinalizationCache = localStorage.getItem(LOCAL_STORAGE_LAST_FINALIZATION_KEY);
+
+      if (lastFinalizationCache) {
+        this.store.dispatch(actions.setLastFinalization({
+          lastFinalization: new Date(Number(lastFinalizationCache) * 1000)
+        }));
       }
 
       const data = await this.db.collection('queue').get({ keys: true });
@@ -75,6 +87,27 @@ export class TransactionQueueService {
       console.error(ex);
     } finally {
       this.store.dispatch(actions.updateFetching({ fetching: false }));
+    }
+  }
+
+  async finalizeTransactions() {
+    const location = await this.locationService.getCurrent();
+    const latlongIsZero = location.latitude === 0 && location.latitude === 0;
+
+    const result = await this.http.request({
+      method: 'POST',
+      url: this.getServerUrl() + '/finalize',
+      data: {
+        geolat: latlongIsZero ? .1 : location.latitude,
+        geolong: latlongIsZero ? .1 : location.longitude
+      }
+    });
+
+    if (result.status === 200) {
+      localStorage.setItem(LOCAL_STORAGE_LAST_FINALIZATION_KEY, result.data.last_finalization);
+      this.store.dispatch(actions.setLastFinalization({
+        lastFinalization: new Date(result.data.last_finalization * 1000)
+      }));
     }
   }
 
@@ -120,6 +153,26 @@ export class TransactionQueueService {
         }
       }
     } catch (ex) {
+      console.error(ex);
+    }
+
+    await this.syncLastFinalizationToServer();
+  }
+
+  async syncLastFinalizationToServer() {
+    try {
+      const result = await this.http.request({
+        method: 'GET',
+        url: this.getServerUrl() + '/finalize'
+      });
+
+      if (result.status === 200 && result.data.last_finalization) {
+        localStorage.setItem(LOCAL_STORAGE_LAST_FINALIZATION_KEY, result.data.last_finalization);
+        this.store.dispatch(actions.setLastFinalization({
+          lastFinalization: new Date(result.data.last_finalization * 1000)
+        }));
+      }
+    } catch(ex) {
       console.error(ex);
     }
   }

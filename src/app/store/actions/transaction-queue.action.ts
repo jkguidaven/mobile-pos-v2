@@ -7,3 +7,4 @@ export const updateTransaction = createAction('[Transaction queue] update transa
   props<{ localId: string; transaction: Transaction }>());
 export const updateFetching = createAction('[Transaction queue] update fetching', props<{ fetching: boolean }>());
 export const clearTransaction = createAction('[Transaction queue] clear transaction');
+export const setLastFinalization = createAction('[Transaction queue] set last finalized date', props<{ lastFinalization: Date }>());

@@ -60,3 +60,8 @@ ion-title {
   border-radius: 10px;
   opacity: 9.5;
 }
+
+.button-disabled {
+  opacity: 1;
+  filter: grayscale(1) brightness(3);
+}

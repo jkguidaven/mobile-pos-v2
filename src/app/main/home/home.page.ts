@@ -11,6 +11,7 @@ import { TransactionQueueService } from 'src/app/services/transaction-queue.serv
 import { CreateTransactionComponent } from './modals/create-transaction/create-transaction.component';
 import * as moment from 'moment';
 import { FormControl } from '@angular/forms';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-home',
@@ -117,5 +118,37 @@ export class HomePage implements OnInit {
     });
 
     alert.present();
+    const result = await alert.onWillDismiss();
+    let loader;
+    if (result.role === 'finalize') {
+      loader = await this.loadingController.create({
+        message: 'Finalizing transactions. please wait..'
+      });
+      loader.present();
+      try {
+        await this.transactionQueueService.finalizeTransactions();
+      } catch(ex) {
+        const toast = this.toastController.create({
+          color: 'primary',
+          message: 'unable to finalize your transactions. please try again later.',
+          duration: 2000
+        });
+        (await toast).present();
+      } finally {
+        if (loader) {
+          loader.dismiss();
+        }
+      }
+    }
+  }
+
+  hasFinalizedToday(): Observable<Boolean> {
+    return this.transactionQueue$.pipe(map((transactionList) => {
+      const now = new Date();
+      return transactionList.lastFinalization &&
+        now.getDate() === transactionList.lastFinalization.getDate() &&
+        now.getMonth() === transactionList.lastFinalization.getMonth() &&
+        now.getFullYear() === transactionList.lastFinalization.getFullYear()
+    }));
   }
 }

@@ -55,10 +55,10 @@
       class="ion-padding finalize-button"
       expand="block"
       (click)="finalize()"
-      [disabled]="(transactionQueue$ | async).transactions.length === 0"
+      [disabled]="(transactionQueue$ | async).transactions.length === 0 || (hasFinalizedToday() | async)"
       mode="ios"
     >
-      FINALIZE TRANSACTIONS
+      {{ (hasFinalizedToday() | async) ? 'Transactions has been finalized today' : 'Finalize Transactions' }}
     </ion-button>
   </ng-template>
 </ion-content>
