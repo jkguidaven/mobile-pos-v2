@@ -50,5 +50,4 @@ export class TransactionListComponent implements OnInit {
   private getRandomWidth() {
     return Math.floor(Math.random() * 90) + 50;
   }
-
 }

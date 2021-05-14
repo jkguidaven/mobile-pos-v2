@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AlertController, ModalController } from '@ionic/angular';
+import { AlertController, LoadingController, ModalController, ToastController } from '@ionic/angular';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { AppState } from 'src/app/models/app-state';
@@ -28,7 +28,9 @@ export class HomePage implements OnInit {
     public store: Store<AppState>,
     private transactionQueueService: TransactionQueueService,
     private modalController: ModalController,
-    private alertController: AlertController)
+    private alertController: AlertController,
+    private toastController: ToastController,
+    private loadingController: LoadingController)
   {
     this.userInfo$ = store.select('userInfo');
     this.dbSync$ = store.select('dbSync');
@@ -67,7 +69,25 @@ export class HomePage implements OnInit {
 
     const { data } = await modal.onWillDismiss();
 
-    if (data) {
+    if (data && data.cancelTransaction) {
+      let loader;
+      try {
+        loader = await this.loadingController.create({ message: 'Cancelling transaction. please wait.'});
+        loader.present();
+        await this.transactionQueueService.cancelTransaction(transaction);
+      } catch(ex) {
+        const toast = this.toastController.create({
+          color: 'primary',
+          message: 'unable to cancel transaction. please try again later.',
+          duration: 2000
+        });
+        (await toast).present();
+      } finally {
+        if (loader) {
+          loader.dismiss();
+        }
+      }
+    } else if (data) {
       this.transactionQueueService.pushEditedTransaction({
         ...transaction,
         items: data.items,

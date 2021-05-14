@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { ModalController } from '@ionic/angular';
+import { AlertController, ModalController } from '@ionic/angular';
 import { Transaction } from 'src/app/models/transaction';
 import { UserInfo } from 'src/app/models/user-info';
 import { GeolocationWatcherService } from 'src/app/services/geolocation-watcher.service';
@@ -23,6 +23,7 @@ export class CreateTransactionComponent implements OnInit {
 
   constructor(
     private modalController: ModalController,
+    private alertController: AlertController,
     private geolocationService: GeolocationWatcherService,
     private userInfoService: UserInfoService) { }
 
@@ -95,6 +96,33 @@ export class CreateTransactionComponent implements OnInit {
     const { data } = await modal.onWillDismiss();
     if (data) {
       this.items[index] = data;
+    }
+  }
+
+  async CancelTransaction() {
+    const alert = await this.alertController.create({
+      header: 'Cancel Transaction',
+      message: 'Are you sure you want to cancel the transaction?',
+      buttons: [
+        {
+          text: 'No',
+          role: 'no',
+          cssClass: 'cancel-button-alert'
+        },
+        {
+          text: 'Yes',
+          role: 'yes',
+          cssClass: 'primary'
+        }
+      ]
+    });
+
+    alert.present();
+
+    const result = await alert.onWillDismiss();
+
+    if (result.role === 'yes') {
+      this.modalController.dismiss({ cancelTransaction: true });
     }
   }
 

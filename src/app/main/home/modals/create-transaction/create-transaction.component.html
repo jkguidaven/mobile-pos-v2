@@ -8,6 +8,11 @@
   <ion-title>
     {{ editMode ? 'Edit Transaction' : 'Add Transaction' }}
   </ion-title>
+
+
+  <ion-buttons slot="end" *ngIf="editMode && !readonlyMode" (click)="CancelTransaction()">
+    <ion-button>Cancel</ion-button>
+  </ion-buttons>
 </ion-toolbar>
 
 <ion-content>

@@ -134,6 +134,21 @@ export class TransactionQueueService {
     }));
   }
 
+  async cancelTransaction(transaction: Transaction) {
+    if (transaction.id) {
+      const result = await this.http.request({
+        method: 'DELETE',
+        url: this.getServerUrl() + '/' + transaction.id,
+      });
+
+      if (result.status !== 200) {
+        throw new Error();
+      }
+    }
+
+    this.removeFromQueue(transaction.localId);
+  }
+
   checkCurrentTransaction(): Promise<any> {
     return this.db.collection('queue').get({ keys: true })
       .then((queue) => queue.find(({ data }: { data: Transaction }) => data.unsubmittedChange));

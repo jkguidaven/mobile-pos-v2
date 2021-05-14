@@ -13,7 +13,7 @@
 
   <ng-template #realList>
     <ion-list lines="none" *ngIf="transactions.length > 0; else noTransaction">
-      <ion-item button *ngFor="let transaction of transactions" (click)="select.emit(transaction)">
+      <ion-item button *ngFor="let transaction of transactions" (click)="selectTransaction.emit(transaction)">
         <ion-label class="main-description">
           <div>
             <h2>{{ transaction.customer_description }}</h2>
