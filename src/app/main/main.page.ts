@@ -46,13 +46,13 @@ export class MainPage implements OnInit {
     }
   }
 
-  hasFinalizedToday(): Observable<Boolean> {
+  hasFinalizedToday(): Observable<boolean> {
     return this.transactionQueue$.pipe(map((transactionList) => {
       const now = new Date();
       return transactionList.lastFinalization &&
         now.getDate() === transactionList.lastFinalization.getDate() &&
         now.getMonth() === transactionList.lastFinalization.getMonth() &&
-        now.getFullYear() === transactionList.lastFinalization.getFullYear()
+        now.getFullYear() === transactionList.lastFinalization.getFullYear();
     }));
   }
 }

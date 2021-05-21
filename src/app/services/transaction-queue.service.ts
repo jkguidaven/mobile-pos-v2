@@ -131,6 +131,8 @@ export class TransactionQueueService {
             await this.db.collection('queue').doc(localTransaction.key)
               .update({
                 ...localTransaction.data,
+                booking_date: new Date(transaction.booking_date * 1000),
+                created_date: new Date(transaction.created_at * 1000),
                 status: transaction.status
               });
           } else {
