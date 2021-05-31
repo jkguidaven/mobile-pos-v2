@@ -91,23 +91,29 @@ export class TransactionQueueService {
   }
 
   async finalizeTransactions() {
-    const location = await this.locationService.getCurrent();
-    const latlongIsZero = location.latitude === 0 && location.latitude === 0;
+    try {
+      console.log('sending finalize request to backend');
+      const location = await this.locationService.getCurrent();
+      console.log({ location });
+      const latlongIsZero = location.longitude === 0 && location.latitude === 0;
+      const result = await this.http.request({
+        method: 'POST',
+        url: this.getServerUrl() + '/finalize',
+        data: {
+          geolat: latlongIsZero ? .1 : location.latitude,
+          geolong: latlongIsZero ? .1 : location.longitude
+        }
+      });
 
-    const result = await this.http.request({
-      method: 'POST',
-      url: this.getServerUrl() + '/finalize',
-      data: {
-        geolat: latlongIsZero ? .1 : location.latitude,
-        geolong: latlongIsZero ? .1 : location.longitude
+      console.log({ result });
+      if (result.status === 200) {
+        localStorage.setItem(LOCAL_STORAGE_LAST_FINALIZATION_KEY, result.data.last_finalization);
+        this.store.dispatch(actions.setLastFinalization({
+          lastFinalization: new Date(result.data.last_finalization * 1000)
+        }));
       }
-    });
-
-    if (result.status === 200) {
-      localStorage.setItem(LOCAL_STORAGE_LAST_FINALIZATION_KEY, result.data.last_finalization);
-      this.store.dispatch(actions.setLastFinalization({
-        lastFinalization: new Date(result.data.last_finalization * 1000)
-      }));
+    } catch(ex) {
+      console.log({ ex });
     }
   }
 
@@ -291,7 +297,7 @@ export class TransactionQueueService {
   }
 
   private async submitTransactionToBackend(transaction: Transaction) {
-    const latlongIsZero = transaction.geolocation.latitude === 0 &&
+    const latlongIsZero = transaction.geolocation.longitude === 0 &&
       transaction.geolocation.latitude === 0;
 
     const result = await this.http.request({
@@ -323,7 +329,7 @@ export class TransactionQueueService {
 
   private async updateTransactionFromBackend(transaction: Transaction) {
     const latlongIsZero = transaction.geolocation.latitude === 0 &&
-      transaction.geolocation.latitude === 0;
+      transaction.geolocation.longitude === 0;
 
     const result = await this.http.request({
       method: 'POST',

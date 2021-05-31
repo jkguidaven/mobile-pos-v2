@@ -120,12 +120,14 @@ export class HomePage implements OnInit {
     alert.present();
     const result = await alert.onWillDismiss();
     let loader;
+    console.log({ result });
     if (result.role === 'finalize') {
       loader = await this.loadingController.create({
         message: 'Finalizing transactions. please wait..'
       });
       loader.present();
       try {
+        console.log('Finalizing transaction');
         await this.transactionQueueService.finalizeTransactions();
       } catch(ex) {
         const toast = this.toastController.create({
