@@ -18,18 +18,20 @@ const { Network: network } = Plugins;
 const LOCAL_STORAGE_LAST_FINALIZATION_KEY = 'LAST_FINALIZATION';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class TransactionQueueService {
   private db: Localbase;
   private agentId: number;
-  constructor(private store: Store<AppState>,
+  constructor(
+    private store: Store<AppState>,
     private http: NativeHttpService,
     private serverSettings: ServerSettingsService,
     private userInfoService: UserInfoService,
     private lookupTable: LookupTableService,
     private tokenService: TokenService,
-    private locationService: GeolocationWatcherService) {
+    private locationService: GeolocationWatcherService
+  ) {
     this.db = new Localbase('db');
     this.db.config.debug = false;
     this.agentId = this.userInfoService.get()?.id;
@@ -51,39 +53,46 @@ export class TransactionQueueService {
         await this.syncLocalCacheToServer();
       }
 
-      const lastFinalizationCache = localStorage.getItem(LOCAL_STORAGE_LAST_FINALIZATION_KEY);
+      const lastFinalizationCache = localStorage.getItem(
+        LOCAL_STORAGE_LAST_FINALIZATION_KEY
+      );
 
       if (lastFinalizationCache) {
-        this.store.dispatch(actions.setLastFinalization({
-          lastFinalization: new Date(Number(lastFinalizationCache) * 1000)
-        }));
+        this.store.dispatch(
+          actions.setLastFinalization({
+            lastFinalization: new Date(Number(lastFinalizationCache) * 1000),
+          })
+        );
       }
 
       const data = await this.db.collection('queue').get({ keys: true });
 
-      data.forEach(transaction => {
+      data.forEach((transaction) => {
         const createdDate = transaction.data.created_date;
         const now = new Date();
-        if (createdDate &&
+        if (
+          createdDate &&
           now.getDate() === createdDate.getDate() &&
           now.getMonth() === createdDate.getMonth() &&
-          now.getFullYear() === createdDate.getFullYear()) {
-
+          now.getFullYear() === createdDate.getFullYear()
+        ) {
           // Check if queued item is for current user. if not do not include to app state
           if (transaction.data.agent === this.agentId) {
-            this.store.dispatch(actions.pushTransaction({
-              transaction: {
-                ...transaction.data,
-                localId: transaction.key
-              }
-            }));
+            this.store.dispatch(
+              actions.pushTransaction({
+                transaction: {
+                  ...transaction.data,
+                  localId: transaction.key,
+                },
+              })
+            );
           }
         } else {
           console.log('delete transaction: ' + transaction.key);
           this.db.collection('queue').doc(transaction.key).delete();
         }
       });
-    } catch(ex) {
+    } catch (ex) {
       console.error(ex);
     } finally {
       this.store.dispatch(actions.updateFetching({ fetching: false }));
@@ -100,19 +109,24 @@ export class TransactionQueueService {
         method: 'POST',
         url: this.getServerUrl() + '/finalize',
         data: {
-          geolat: latlongIsZero ? .1 : location.latitude,
-          geolong: latlongIsZero ? .1 : location.longitude
-        }
+          geolat: latlongIsZero ? 0.1 : location.latitude,
+          geolong: latlongIsZero ? 0.1 : location.longitude,
+        },
       });
 
       console.log({ result });
       if (result.status === 200) {
-        localStorage.setItem(LOCAL_STORAGE_LAST_FINALIZATION_KEY, result.data.last_finalization);
-        this.store.dispatch(actions.setLastFinalization({
-          lastFinalization: new Date(result.data.last_finalization * 1000)
-        }));
+        localStorage.setItem(
+          LOCAL_STORAGE_LAST_FINALIZATION_KEY,
+          result.data.last_finalization
+        );
+        this.store.dispatch(
+          actions.setLastFinalization({
+            lastFinalization: new Date(result.data.last_finalization * 1000),
+          })
+        );
       }
-    } catch(ex) {
+    } catch (ex) {
       console.log({ ex });
     }
   }
@@ -125,7 +139,7 @@ export class TransactionQueueService {
         url: this.getServerUrl(),
         headers: {
           // eslint-disable-next-line
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
       });
 
@@ -134,12 +148,14 @@ export class TransactionQueueService {
           const localTransaction = await this.getFromLocalById(transaction.id);
 
           if (localTransaction) {
-            await this.db.collection('queue').doc(localTransaction.key)
+            await this.db
+              .collection('queue')
+              .doc(localTransaction.key)
               .update({
                 ...localTransaction.data,
                 booking_date: new Date(transaction.booking_date * 1000),
                 created_date: new Date(transaction.created_at * 1000),
-                status: transaction.status
+                status: transaction.status,
               });
           } else {
             await this.db.collection('queue').add({
@@ -149,13 +165,15 @@ export class TransactionQueueService {
               unsubmittedChange: false,
               agent: this.agentId,
               items: transaction.items.map((item) => {
-                const cacheInfo = this.lookupTable.searchDataFromCache('items',
-                  (cacheItem) => cacheItem.id === item.item);
+                const cacheInfo = this.lookupTable.searchDataFromCache(
+                  'items',
+                  (cacheItem) => cacheItem.id === item.item
+                );
                 return {
                   ...cacheInfo[0],
-                  ...item
+                  ...item,
                 };
-              })
+              }),
             });
           }
         }
@@ -171,28 +189,35 @@ export class TransactionQueueService {
     try {
       const result = await this.http.request({
         method: 'GET',
-        url: this.getServerUrl() + '/finalize'
+        url: this.getServerUrl() + '/finalize',
       });
 
       if (result.status === 200 && result.data.last_finalization) {
-        localStorage.setItem(LOCAL_STORAGE_LAST_FINALIZATION_KEY, result.data.last_finalization);
-        this.store.dispatch(actions.setLastFinalization({
-          lastFinalization: new Date(result.data.last_finalization * 1000)
-        }));
+        localStorage.setItem(
+          LOCAL_STORAGE_LAST_FINALIZATION_KEY,
+          result.data.last_finalization
+        );
+        this.store.dispatch(
+          actions.setLastFinalization({
+            lastFinalization: new Date(result.data.last_finalization * 1000),
+          })
+        );
       }
-    } catch(ex) {
+    } catch (ex) {
       console.error(ex);
     }
   }
 
   async addToQueue(transaction: Transaction) {
     const result = await this.db.collection('queue').add(transaction);
-    this.store.dispatch(actions.pushTransaction({
-      transaction: {
-        ...result.data.data,
-        localId: result.data.key
-      }
-    }));
+    this.store.dispatch(
+      actions.pushTransaction({
+        transaction: {
+          ...result.data.data,
+          localId: result.data.key,
+        },
+      })
+    );
   }
 
   async cancelTransaction(transaction: Transaction) {
@@ -211,16 +236,22 @@ export class TransactionQueueService {
   }
 
   checkCurrentTransaction(): Promise<any> {
-    return this.db.collection('queue').get({ keys: true })
-      .then((queue) => queue.find(({ data }: { data: Transaction }) => data.unsubmittedChange));
+    return this.db
+      .collection('queue')
+      .get({ keys: true })
+      .then((queue) =>
+        queue.find(({ data }: { data: Transaction }) => data.unsubmittedChange)
+      );
   }
 
   async pushEditedTransaction(transaction: Transaction) {
     this.db.collection('queue').doc(transaction.localId).update(transaction);
-    this.store.dispatch(actions.updateTransaction({
-      localId: transaction.localId,
-      transaction
-    }));
+    this.store.dispatch(
+      actions.updateTransaction({
+        localId: transaction.localId,
+        transaction,
+      })
+    );
   }
 
   async removeFromQueue(key: string) {
@@ -230,7 +261,7 @@ export class TransactionQueueService {
 
   async eventLoop() {
     try {
-    await this.handleQueue();
+      await this.handleQueue();
     } catch (ex) {
       console.error(ex);
     }
@@ -244,11 +275,12 @@ export class TransactionQueueService {
     const networkStatus = await network.getStatus();
 
     if (networkStatus.connected) {
-
       const queue = await this.checkCurrentTransaction();
 
       if (queue && this.tokenService.get()) {
-        console.log('detected a pending task.. attempt to push it to the server');
+        console.log(
+          'detected a pending task.. attempt to push it to the server'
+        );
         const { data, key }: { data: Transaction; key: string } = queue;
 
         try {
@@ -259,16 +291,19 @@ export class TransactionQueueService {
               this.db.collection('queue').doc(key).update({
                 id: result.id,
                 status: result.status,
-                unsubmittedChange: false
+                unsubmittedChange: false,
               });
 
-              this.store.dispatch(actions.updateTransaction({
-                localId: key,
-                transaction: {
-                  ...data,
-                  id: result.id,
-                  status: result.status,
-                }}));
+              this.store.dispatch(
+                actions.updateTransaction({
+                  localId: key,
+                  transaction: {
+                    ...data,
+                    id: result.id,
+                    status: result.status,
+                  },
+                })
+              );
             }
           } else if (data.unsubmittedChange) {
             const result = await this.updateTransactionFromBackend(data);
@@ -277,16 +312,19 @@ export class TransactionQueueService {
               this.db.collection('queue').doc(key).update({
                 id: result.id,
                 status: result.status,
-                unsubmittedChange: false
+                unsubmittedChange: false,
               });
 
-              this.store.dispatch(actions.updateTransaction({
-                localId: key,
-                transaction: {
-                  ...data,
-                  id: result.id,
-                  status: result.status,
-                }}));
+              this.store.dispatch(
+                actions.updateTransaction({
+                  localId: key,
+                  transaction: {
+                    ...data,
+                    id: result.id,
+                    status: result.status,
+                  },
+                })
+              );
             }
           }
         } catch (ex) {
@@ -297,7 +335,8 @@ export class TransactionQueueService {
   }
 
   private async submitTransactionToBackend(transaction: Transaction) {
-    const latlongIsZero = transaction.geolocation.longitude === 0 &&
+    const latlongIsZero =
+      transaction.geolocation.longitude === 0 &&
       transaction.geolocation.latitude === 0;
 
     const result = await this.http.request({
@@ -305,30 +344,33 @@ export class TransactionQueueService {
       url: this.getServerUrl(),
       headers: {
         // eslint-disable-next-line
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       data: {
         customer: transaction.customer,
         customer_description: transaction.customer_description,
         geolocation: {
-          lat: latlongIsZero ? .1 : transaction.geolocation.latitude,
-          long: latlongIsZero ? .1 : transaction.geolocation.longitude,
+          lat: latlongIsZero ? 0.1 : transaction.geolocation.latitude,
+          long: latlongIsZero ? 0.1 : transaction.geolocation.longitude,
         },
         booking_date: transaction.booking_date.getTime() / 1000,
+        payment_method: transaction.payment_method,
+        payment_term: transaction.payment_term,
         items: transaction.items.map((item) => ({
           item: item.id,
           price: item.price,
-          quantity: item.quantity
+          quantity: item.quantity,
         })),
-        agent: transaction.agent
-      }
+        agent: transaction.agent,
+      },
     });
 
     return result ? result.data : null;
   }
 
   private async updateTransactionFromBackend(transaction: Transaction) {
-    const latlongIsZero = transaction.geolocation.latitude === 0 &&
+    const latlongIsZero =
+      transaction.geolocation.latitude === 0 &&
       transaction.geolocation.longitude === 0;
 
     const result = await this.http.request({
@@ -336,23 +378,25 @@ export class TransactionQueueService {
       url: this.getServerUrl() + '/' + transaction.id,
       headers: {
         // eslint-disable-next-line
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       data: {
         customer: transaction.customer,
         customer_description: transaction.customer_description,
         geolocation: {
-          lat: latlongIsZero ? .1 : transaction.geolocation.latitude,
-          long: latlongIsZero ? .1 : transaction.geolocation.longitude,
+          lat: latlongIsZero ? 0.1 : transaction.geolocation.latitude,
+          long: latlongIsZero ? 0.1 : transaction.geolocation.longitude,
         },
+        payment_method: transaction.payment_method,
+        payment_term: transaction.payment_term,
         booking_date: transaction.booking_date.getTime() / 1000,
         items: transaction.items.map((item) => ({
           item: item.id,
           price: item.price,
-          quantity: item.quantity
+          quantity: item.quantity,
         })),
-        agent: transaction.agent
-      }
+        agent: transaction.agent,
+      },
     });
 
     return result ? result.data : null;
@@ -363,7 +407,11 @@ export class TransactionQueueService {
   }
 
   private getFromLocalById(id: number) {
-    return this.db.collection('queue').get({ keys: true })
-      .then((results) => results.find((transaction) => transaction.data.id === id));
+    return this.db
+      .collection('queue')
+      .get({ keys: true })
+      .then((results) =>
+        results.find((transaction) => transaction.data.id === id)
+      );
   }
 }

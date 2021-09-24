@@ -9,7 +9,7 @@ import { ServerSettingsService } from './server-settings.service';
 const STORE_LAST_SYNC_KEY = 'last_db_sync';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class LookupTableService {
   private db: Localbase = new Localbase('lookup');
@@ -17,7 +17,8 @@ export class LookupTableService {
   constructor(
     private store: Store<AppState>,
     private serverSettings: ServerSettingsService,
-    private nativeHttp: NativeHttpService) {
+    private nativeHttp: NativeHttpService
+  ) {
     this.db.config.debug = false;
   }
 
@@ -28,14 +29,19 @@ export class LookupTableService {
       await this.syncTable('customers', 'customers');
       await this.syncTable('items', 'items');
       await this.syncTable('payment_methods', 'payment_methods', true);
+      await this.syncTable('payment_terms', 'payment_terms', true);
       await this.syncTable('price_schemes', 'price-schemes');
 
       const now = new Date();
-      this.updateSyncMessage(`Successfully sync device to server. your last sync was ${now.toISOString()}`);
+      this.updateSyncMessage(
+        `Successfully sync device to server. your last sync was ${now.toISOString()}`
+      );
       this.store.dispatch(DBSyncActions.setLastSync({ lastSync: now }));
       localStorage.setItem(STORE_LAST_SYNC_KEY, now.toISOString());
     } catch (ex) {
-      this.updateSyncMessage('Unable to sync device to server. please try again.');
+      this.updateSyncMessage(
+        'Unable to sync device to server. please try again.'
+      );
       console.error(ex);
     }
 
@@ -45,11 +51,14 @@ export class LookupTableService {
   async load() {
     const lastSync = localStorage.getItem(STORE_LAST_SYNC_KEY);
     if (lastSync) {
-      this.store.dispatch(DBSyncActions.setLastSync({ lastSync: new Date(lastSync)}));
+      this.store.dispatch(
+        DBSyncActions.setLastSync({ lastSync: new Date(lastSync) })
+      );
       this.updateSyncMessage(`your last sync was ${lastSync}`);
       await this.loadCache('customers');
       await this.loadCache('items');
       await this.loadCache('payment_methods');
+      await this.loadCache('payment_terms');
       await this.loadCache('price_schemes');
     }
   }
@@ -62,6 +71,7 @@ export class LookupTableService {
         db.createObjectStore('customers', { autoIncrement: true });
         db.createObjectStore('items', { autoIncrement: true });
         db.createObjectStore('payment_methods', { autoIncrement: true });
+        db.createObjectStore('payment_terms', { autoIncrement: true });
         db.createObjectStore('price_schemes', { autoIncrement: true });
       };
 
@@ -87,18 +97,20 @@ export class LookupTableService {
     clearStore.clear();
 
     this.cache[table] = [];
-    this.updateSyncMessage(`Pulling ${table} information from server. please wait a moment.`);
+    this.updateSyncMessage(
+      `Pulling ${table} information from server. please wait a moment.`
+    );
     let page = 0;
     const length = 300;
 
-    while(true) {
+    while (true) {
       const result = await this.nativeHttp.request({
         method: 'GET',
         url: this.getEndPointByTable(table),
         params: {
           page: `${page}`,
-          length: `${length}`
-        }
+          length: `${length}`,
+        },
       });
 
       console.log({
@@ -107,7 +119,7 @@ export class LookupTableService {
         length,
         pulledLength: result.data[map].length,
         lastPage: result.data.last_page,
-        total: result.data.total
+        total: result.data.total,
       });
 
       if (result.status === 200) {
@@ -119,7 +131,11 @@ export class LookupTableService {
           this.cache[table].push(row);
         }
 
-        if (page === result.data.last_page || result.data[map].length === 0 || pullOnce) {
+        if (
+          page === result.data.last_page ||
+          result.data[map].length === 0 ||
+          pullOnce
+        ) {
           break;
         } else {
           page++;

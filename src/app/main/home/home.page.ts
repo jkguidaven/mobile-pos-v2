@@ -1,5 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { AlertController, LoadingController, ModalController, ToastController } from '@ionic/angular';
+import {
+  AlertController,
+  LoadingController,
+  ModalController,
+  ToastController,
+} from '@ionic/angular';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { AppState } from 'src/app/models/app-state';
@@ -12,6 +17,7 @@ import { CreateTransactionComponent } from './modals/create-transaction/create-t
 import * as moment from 'moment';
 import { FormControl } from '@angular/forms';
 import { map } from 'rxjs/operators';
+import { LookupTableService } from 'src/app/services/lookup-table.service';
 
 @Component({
   selector: 'app-home',
@@ -19,7 +25,6 @@ import { map } from 'rxjs/operators';
   styleUrls: ['./home.page.scss'],
 })
 export class HomePage implements OnInit {
-  dailySales = 13105.60;
   counto: number;
   userInfo$: Observable<UserInfo>;
   dbSync$: Observable<DBSyncState>;
@@ -31,8 +36,9 @@ export class HomePage implements OnInit {
     private modalController: ModalController,
     private alertController: AlertController,
     private toastController: ToastController,
-    private loadingController: LoadingController)
-  {
+    private loadingController: LoadingController,
+    private lookupTableService: LookupTableService
+  ) {
     this.userInfo$ = store.select('userInfo');
     this.dbSync$ = store.select('dbSync');
     this.transactionQueue$ = store.select('transactionQueue');
@@ -53,18 +59,31 @@ export class HomePage implements OnInit {
   }
 
   async onTransactionSelect(transaction: Transaction) {
+    const customer = await this.lookupTableService.searchDataFromCache(
+      'customers',
+      (customer) => {
+        return customer.id === transaction.customer;
+      }
+    )[0];
+
     const modal = await this.modalController.create({
       component: CreateTransactionComponent,
       componentProps: {
         editMode: true,
-        readonlyMode: [ 'processing', 'approved', 'edited' ].includes(transaction.status),
-        customer: {
+        readonlyMode: ['processing', 'approved', 'edited'].includes(
+          transaction.status
+        ),
+        customer: customer ?? {
           id: transaction.customer,
-          name: transaction.customer_description
+          name: transaction.customer_description,
         },
-        dateControl: new FormControl(moment(transaction.booking_date).format('YYYY-MM-DD')),
-        items: [ ...transaction.items ]
-      }
+        dateControl: new FormControl(
+          moment(transaction.booking_date).format('YYYY-MM-DD')
+        ),
+        pmethodControl: new FormControl(transaction.payment_method),
+        ptermControl: new FormControl(transaction.payment_term),
+        items: [...transaction.items],
+      },
     });
     modal.present();
 
@@ -73,14 +92,16 @@ export class HomePage implements OnInit {
     if (data && data.cancelTransaction) {
       let loader;
       try {
-        loader = await this.loadingController.create({ message: 'Cancelling transaction. please wait.'});
+        loader = await this.loadingController.create({
+          message: 'Cancelling transaction. please wait.',
+        });
         loader.present();
         await this.transactionQueueService.cancelTransaction(transaction);
-      } catch(ex) {
+      } catch (ex) {
         const toast = this.toastController.create({
           color: 'primary',
           message: 'unable to cancel transaction. please try again later.',
-          duration: 2000
+          duration: 2000,
         });
         (await toast).present();
       } finally {
@@ -93,7 +114,7 @@ export class HomePage implements OnInit {
         ...transaction,
         items: data.items,
         booking_date: data.booking_date,
-        unsubmittedChange: true
+        unsubmittedChange: true,
       });
     }
   }
@@ -101,20 +122,21 @@ export class HomePage implements OnInit {
   async finalize() {
     const alert = await this.alertController.create({
       header: 'Finalize Transaction',
-      message: 'Are you sure you want to finalize the transactions? \n '
-        + 'Doing so will disable creation of new transaction for the day.',
+      message:
+        'Are you sure you want to finalize the transactions? \n ' +
+        'Doing so will disable creation of new transaction for the day.',
       buttons: [
         {
           text: 'Cancel',
           role: 'cancel',
-          cssClass: 'cancel-button-alert'
+          cssClass: 'cancel-button-alert',
         },
         {
           text: 'Finalize Transactions',
           role: 'finalize',
-          cssClass: 'primary'
-        }
-      ]
+          cssClass: 'primary',
+        },
+      ],
     });
 
     alert.present();
@@ -123,17 +145,18 @@ export class HomePage implements OnInit {
     console.log({ result });
     if (result.role === 'finalize') {
       loader = await this.loadingController.create({
-        message: 'Finalizing transactions. please wait..'
+        message: 'Finalizing transactions. please wait..',
       });
       loader.present();
       try {
         console.log('Finalizing transaction');
         await this.transactionQueueService.finalizeTransactions();
-      } catch(ex) {
+      } catch (ex) {
         const toast = this.toastController.create({
           color: 'primary',
-          message: 'unable to finalize your transactions. please try again later.',
-          duration: 2000
+          message:
+            'unable to finalize your transactions. please try again later.',
+          duration: 2000,
         });
         (await toast).present();
       } finally {
@@ -145,12 +168,16 @@ export class HomePage implements OnInit {
   }
 
   hasFinalizedToday(): Observable<boolean> {
-    return this.transactionQueue$.pipe(map((transactionList) => {
-      const now = new Date();
-      return transactionList.lastFinalization &&
-        now.getDate() === transactionList.lastFinalization.getDate() &&
-        now.getMonth() === transactionList.lastFinalization.getMonth() &&
-        now.getFullYear() === transactionList.lastFinalization.getFullYear();
-    }));
+    return this.transactionQueue$.pipe(
+      map((transactionList) => {
+        const now = new Date();
+        return (
+          transactionList.lastFinalization &&
+          now.getDate() === transactionList.lastFinalization.getDate() &&
+          now.getMonth() === transactionList.lastFinalization.getMonth() &&
+          now.getFullYear() === transactionList.lastFinalization.getFullYear()
+        );
+      })
+    );
   }
 }

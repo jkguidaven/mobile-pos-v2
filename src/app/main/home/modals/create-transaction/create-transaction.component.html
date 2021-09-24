@@ -6,34 +6,79 @@
   </ion-buttons>
 
   <ion-title>
-    {{ editMode ? 'Edit Transaction' : 'Add Transaction' }}
+    {{ editMode ? "Edit Transaction" : "Add Transaction" }}
   </ion-title>
 
-
-  <ion-buttons slot="end" *ngIf="editMode && !readonlyMode" (click)="CancelTransaction()">
+  <ion-buttons
+    slot="end"
+    *ngIf="editMode && !readonlyMode"
+    (click)="CancelTransaction()"
+  >
     <ion-button>Cancel</ion-button>
   </ion-buttons>
 </ion-toolbar>
 
 <ion-content>
-  <div class="spacer">
-  </div>
+  <div class="spacer"></div>
 
   <div class="header-container">
-    <ion-text color="danger" class="edit-disabled-instruction" *ngIf="readonlyMode">
+    <ion-text
+      color="danger"
+      class="edit-disabled-instruction"
+      *ngIf="readonlyMode"
+    >
       This transaction can no longer be edited.
     </ion-text>
 
-    <app-customer-selector [(model)]="customer" [disabled]="editMode"></app-customer-selector>
+    <app-customer-selector
+      [(model)]="customer"
+      [disabled]="editMode"
+    ></app-customer-selector>
 
     <ion-item lines="none" class="datepicker">
       <ion-label position="floating">Booking Date</ion-label>
-      <ion-datetime [formControl]="dateControl" [disabled]="readonlyMode"></ion-datetime>
+      <ion-datetime
+        [formControl]="dateControl"
+        [disabled]="readonlyMode"
+      ></ion-datetime>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Payment Method</ion-label>
+      <ion-select
+        placeholder="Select a payment method"
+        [formControl]="pmethodControl"
+        [disabled]="readonlyMode || !hasCustomer"
+        interface="action-sheet"
+      >
+        <ion-select-option
+          *ngFor="let method of paymentMethods"
+          [value]="method.id"
+          >{{ method.description }}</ion-select-option
+        >
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Payment Term</ion-label>
+      <ion-select
+        placeholder="Select a payment term"
+        [formControl]="ptermControl"
+        interface="action-sheet"
+        [disabled]="readonlyMode || !hasCustomer"
+      >
+        <ion-select-option
+          *ngFor="let term of paymentTerms"
+          [value]="term.id"
+          >{{ term.description }}</ion-select-option
+        >
+      </ion-select>
     </ion-item>
   </div>
 
   <div class="transaction-items-container">
-    <app-item-line *ngFor="let item of items; let i = index"
+    <app-item-line
+      *ngFor="let item of items; let i = index"
       [name]="item.name"
       [quantity]="item.quantity"
       [price]="item.price"
@@ -51,10 +96,18 @@
   </div>
 
   <div class="amount-container">
-    <ion-text>Total amount: <b>{{ totalAmount | currency:'PHP':'symbol-narrow' }}</b></ion-text>
+    <ion-text
+      >Total amount:
+      <b>{{ totalAmount | currency: "PHP":"symbol-narrow" }}</b></ion-text
+    >
   </div>
 
-  <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="!readonlyMode">
+  <ion-fab
+    vertical="bottom"
+    horizontal="end"
+    slot="fixed"
+    *ngIf="!readonlyMode"
+  >
     <ion-fab-button [disabled]="!canSubmit" (click)="save()">
       <ion-icon name="send"></ion-icon>
     </ion-fab-button>

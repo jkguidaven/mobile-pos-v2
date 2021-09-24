@@ -4,37 +4,63 @@ import { AlertController, ModalController } from '@ionic/angular';
 import { Transaction } from 'src/app/models/transaction';
 import { UserInfo } from 'src/app/models/user-info';
 import { GeolocationWatcherService } from 'src/app/services/geolocation-watcher.service';
+import { LookupTableService } from 'src/app/services/lookup-table.service';
 import { UserInfoService } from 'src/app/services/user-info.service';
 import { CreateItemFormComponent } from '../create-item-form/create-item-form.component';
 
 @Component({
   selector: 'app-create-transaction',
   templateUrl: './create-transaction.component.html',
-  styleUrls: ['./create-transaction.component.scss']
+  styleUrls: ['./create-transaction.component.scss'],
 })
 export class CreateTransactionComponent implements OnInit {
   @Input() customer: any;
   @Input() dateControl: FormControl = new FormControl();
+  @Input() pmethodControl: FormControl = new FormControl();
+  @Input() ptermControl: FormControl = new FormControl();
   @Input() items: any = [];
   @Input() editMode: boolean;
   @Input() readonlyMode: boolean;
+  paymentTerms: any = [];
+  paymentMethods: any = [];
   userInfo: UserInfo;
-
 
   constructor(
     private modalController: ModalController,
     private alertController: AlertController,
     private geolocationService: GeolocationWatcherService,
-    private userInfoService: UserInfoService) { }
+    private userInfoService: UserInfoService,
+    private lookupTableService: LookupTableService
+  ) {}
 
   ngOnInit(): void {
+    this.initSelectComponents();
     if (!this.editMode) {
       const today = new Date();
       const tomorrow = new Date(today);
       tomorrow.setDate(tomorrow.getDate() + 1);
-      this.dateControl.setValue(`${tomorrow.getFullYear()}-${tomorrow.getMonth()+1}-${tomorrow.getDate()}`);
+      this.dateControl.setValue(
+        `${tomorrow.getFullYear()}-${
+          tomorrow.getMonth() + 1
+        }-${tomorrow.getDate()}`
+      );
     }
     this.userInfo = this.userInfoService.get();
+  }
+
+  async initSelectComponents() {
+    const methods = await this.lookupTableService.searchDataFromCache(
+      'payment_methods',
+      () => true
+    );
+
+    const terms = await this.lookupTableService.searchDataFromCache(
+      'payment_terms',
+      () => true
+    );
+
+    this.paymentMethods = methods ?? [];
+    this.paymentTerms = terms ?? [];
   }
 
   dismiss() {
@@ -53,8 +79,22 @@ export class CreateTransactionComponent implements OnInit {
     return true;
   }
 
+  get hasPaymentMehtod() {
+    return Boolean(this.pmethodControl.value);
+  }
+
+  get hasPaymentTerm() {
+    return Boolean(this.ptermControl.value);
+  }
+
   get canSubmit() {
-    return this.hasCustomer && this.hasDate && this.hasItems;
+    return (
+      this.hasCustomer &&
+      this.hasDate &&
+      this.hasItems &&
+      this.hasPaymentMehtod &&
+      this.hasPaymentTerm
+    );
   }
 
   async showCreateItemForm() {
@@ -63,8 +103,8 @@ export class CreateTransactionComponent implements OnInit {
       cssClass: 'small-modal',
       id: 'create-item-form',
       componentProps: {
-        pricescheme: this.customer.price_scheme
-      }
+        pricescheme: this.customer.price_scheme,
+      },
     });
 
     modal.present();
@@ -87,8 +127,8 @@ export class CreateTransactionComponent implements OnInit {
         item,
         quantityControl: new FormControl(item.quantity),
         priceControl: new FormControl(item.price),
-        updateMode: true
-      }
+        updateMode: true,
+      },
     });
 
     modal.present();
@@ -107,14 +147,14 @@ export class CreateTransactionComponent implements OnInit {
         {
           text: 'No',
           role: 'no',
-          cssClass: 'cancel-button-alert'
+          cssClass: 'cancel-button-alert',
         },
         {
           text: 'Yes',
           role: 'yes',
-          cssClass: 'primary'
-        }
-      ]
+          cssClass: 'primary',
+        },
+      ],
     });
 
     alert.present();
@@ -131,7 +171,10 @@ export class CreateTransactionComponent implements OnInit {
   }
 
   get totalAmount() {
-    return this.items.reduce((total, item) => total + (item.price * item.quantity), 0);
+    return this.items.reduce(
+      (total, item) => total + item.price * item.quantity,
+      0
+    );
   }
 
   async save() {
@@ -139,7 +182,7 @@ export class CreateTransactionComponent implements OnInit {
     console.log(this.dateControl.value);
     const rawBookingDate = this.dateControl.value.split('-');
     booking_date.setFullYear(rawBookingDate[0]);
-    booking_date.setMonth(rawBookingDate[1]-1);
+    booking_date.setMonth(rawBookingDate[1] - 1);
 
     if (rawBookingDate[2].indexOf('T') > -1) {
       booking_date.setDate(rawBookingDate[2].split('T')[0]);
@@ -152,13 +195,15 @@ export class CreateTransactionComponent implements OnInit {
     const transaction: Transaction = {
       customer: this.customer.id,
       customer_description: this.customer.name,
+      payment_method: this.pmethodControl.value,
+      payment_term: this.ptermControl.value,
       booking_date,
       geolocation,
       status: 'queue',
       unsubmittedChange: true,
-      items: [ ...this.items ],
+      items: [...this.items],
       created_date: new Date(),
-      agent: this.userInfo.id
+      agent: this.userInfo.id,
     };
 
     this.modalController.dismiss(transaction);
