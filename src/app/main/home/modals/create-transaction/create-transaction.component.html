@@ -33,6 +33,7 @@
     <app-customer-selector
       [(model)]="customer"
       [disabled]="editMode"
+      (selected)="onCustomerSelected($event)"
     ></app-customer-selector>
 
     <ion-item lines="none" class="datepicker">
@@ -48,7 +49,7 @@
       <ion-select
         placeholder="Select a payment method"
         [formControl]="pmethodControl"
-        [disabled]="readonlyMode || !hasCustomer"
+        [disabled]="readonlyMode || !hasCustomer || cashOnDeliveryModeOnly"
         interface="action-sheet"
       >
         <ion-select-option
@@ -65,7 +66,7 @@
         placeholder="Select a payment term"
         [formControl]="ptermControl"
         interface="action-sheet"
-        [disabled]="readonlyMode || !hasCustomer"
+        [disabled]="readonlyMode || !hasCustomer || cashOnDeliveryModeOnly"
       >
         <ion-select-option
           *ngFor="let term of paymentTerms"

@@ -87,6 +87,19 @@ export class CreateTransactionComponent implements OnInit {
     return Boolean(this.ptermControl.value);
   }
 
+  get cashOnDeliveryModeOnly() {
+    if (this.customer) {
+      const term = this.paymentTerms.find(
+        (term) => term.id === this.customer.payment_term
+      );
+      return (
+        term && term.description.trim().toLowerCase() === 'cash on delivery'
+      );
+    }
+
+    return false;
+  }
+
   get canSubmit() {
     return (
       this.hasCustomer &&
@@ -95,6 +108,24 @@ export class CreateTransactionComponent implements OnInit {
       this.hasPaymentMehtod &&
       this.hasPaymentTerm
     );
+  }
+
+  onCustomerSelected(customer: any) {
+    this.ptermControl.setValue(customer.payment_term);
+
+    const term = this.paymentTerms.find(
+      (term) => term.id === customer.payment_term
+    );
+
+    if (term && term.description.trim().toLowerCase() === 'cash on delivery') {
+      const method = this.paymentMethods.find(
+        (method) => method.description.trim().toLowerCase() === 'cash'
+      );
+
+      if (method) {
+        this.pmethodControl.setValue(method.id);
+      }
+    }
   }
 
   async showCreateItemForm() {
