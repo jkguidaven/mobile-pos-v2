@@ -209,17 +209,8 @@ export class CreateTransactionComponent implements OnInit {
   }
 
   async save() {
-    const booking_date = new Date();
-    console.log(this.dateControl.value);
-    const rawBookingDate = this.dateControl.value.split('-');
-    booking_date.setFullYear(rawBookingDate[0]);
-    booking_date.setMonth(rawBookingDate[1] - 1);
-
-    if (rawBookingDate[2].indexOf('T') > -1) {
-      booking_date.setDate(rawBookingDate[2].split('T')[0]);
-    } else {
-      booking_date.setDate(rawBookingDate[2]);
-    }
+    const booking_date = new Date(this.dateControl.value);
+    console.log(booking_date);
 
     const geolocation = await this.geolocationService.getCurrent();
 
