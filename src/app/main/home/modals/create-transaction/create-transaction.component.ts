@@ -1,12 +1,15 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { AlertController, ModalController } from '@ionic/angular';
+import * as moment from 'moment';
 import { Transaction } from 'src/app/models/transaction';
 import { UserInfo } from 'src/app/models/user-info';
 import { GeolocationWatcherService } from 'src/app/services/geolocation-watcher.service';
 import { LookupTableService } from 'src/app/services/lookup-table.service';
 import { UserInfoService } from 'src/app/services/user-info.service';
 import { CreateItemFormComponent } from '../create-item-form/create-item-form.component';
+
+const DATE_FORMAT = 'YYYY-MM-DD';
 
 @Component({
   selector: 'app-create-transaction',
@@ -36,13 +39,9 @@ export class CreateTransactionComponent implements OnInit {
   ngOnInit(): void {
     this.initSelectComponents();
     if (!this.editMode) {
-      const today = new Date();
-      const tomorrow = new Date(today);
-      tomorrow.setDate(tomorrow.getDate() + 1);
+      const tomorrow = moment().add(1, 'days');
       this.dateControl.setValue(
-        `${tomorrow.getFullYear()}-${
-          tomorrow.getMonth() + 1
-        }-${tomorrow.getDate()}`
+        moment(tomorrow).format(DATE_FORMAT)
       );
     }
     this.userInfo = this.userInfoService.get();
@@ -89,11 +88,11 @@ export class CreateTransactionComponent implements OnInit {
 
   get cashOnDeliveryModeOnly() {
     if (this.customer) {
-      const term = this.paymentTerms.find(
+      const match = this.paymentTerms.find(
         (term) => term.id === this.customer.payment_term
       );
       return (
-        term && term.description.trim().toLowerCase() === 'cash on delivery'
+        match && match.description.trim().toLowerCase() === 'cash on delivery'
       );
     }
 
@@ -113,17 +112,17 @@ export class CreateTransactionComponent implements OnInit {
   onCustomerSelected(customer: any) {
     this.ptermControl.setValue(customer.payment_term);
 
-    const term = this.paymentTerms.find(
+    const match = this.paymentTerms.find(
       (term) => term.id === customer.payment_term
     );
 
-    if (term && term.description.trim().toLowerCase() === 'cash on delivery') {
-      const method = this.paymentMethods.find(
+    if (match && match.description.trim().toLowerCase() === 'cash on delivery') {
+      const matchMethod = this.paymentMethods.find(
         (method) => method.description.trim().toLowerCase() === 'cash'
       );
 
-      if (method) {
-        this.pmethodControl.setValue(method.id);
+      if (matchMethod) {
+        this.pmethodControl.setValue(matchMethod.id);
       }
     }
   }
@@ -209,9 +208,7 @@ export class CreateTransactionComponent implements OnInit {
   }
 
   async save() {
-    const booking_date = new Date(this.dateControl.value);
-    console.log(booking_date);
-
+    const booking_date = moment(this.dateControl.value, DATE_FORMAT).toDate();
     const geolocation = await this.geolocationService.getCurrent();
 
     const transaction: Transaction = {
