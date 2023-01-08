@@ -41,6 +41,7 @@
       <ion-datetime
         [formControl]="dateControl"
         [disabled]="readonlyMode"
+        [max]="max_date.toISOString()"
       ></ion-datetime>
     </ion-item>
 

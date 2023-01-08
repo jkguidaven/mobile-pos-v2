@@ -28,6 +28,8 @@ export class CreateTransactionComponent implements OnInit {
   paymentMethods: any = [];
   userInfo: UserInfo;
 
+  max_date: Date = new Date();
+
   constructor(
     private modalController: ModalController,
     private alertController: AlertController,
@@ -45,6 +47,7 @@ export class CreateTransactionComponent implements OnInit {
       );
     }
     this.userInfo = this.userInfoService.get();
+    this.max_date.setFullYear(this.max_date.getFullYear() + 1);
   }
 
   async initSelectComponents() {
